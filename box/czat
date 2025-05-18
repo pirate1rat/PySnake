@@ -1,0 +1,152 @@
+# classical_game.py
+
+import time
+
+# Zmienna board, która będzie aktualizowana w pętli gry
+board = []
+
+def initialize_board():
+    global board
+    board = [[0]*10 for _ in range(10)]  # Tworzymy planszę 10x10
+
+def game_loop():
+    global board
+    # Prosta pętla gry, która aktualizuje planszę
+    for _ in range(100):  # 100 iteracji gry
+        time.sleep(0.5)  # Zatrzymanie na chwilę, aby symulować czas trwania gry
+        for i in range(10):
+            for j in range(10):
+                board[i][j] = (board[i][j] + 1) % 2  # Prosta zmiana stanu na planszy
+
+def start_game():
+    initialize_board()
+    game_loop()
+    return board  # Zwróć planszę po zakończeniu gry (choć w rzeczywistości pętla trwa)
+
+
+
+
+
+import tkinter as tk
+from tkinter import OptionMenu, StringVar
+import threading
+import importlib.util
+import sys
+
+# Funkcja do odczytu danych z pliku settings
+def read_settings(file_path):
+    settings = {}
+    current_folder = None
+    with open(file_path, 'r') as file:
+        for line in file:
+            line = line.strip()
+            if line.startswith('FOLDER:'):
+                current_folder = line.split(':')[1].strip()
+                settings[current_folder] = []
+            elif line.startswith('SOLUTIONFILE:') and current_folder:
+                solution_files = line.split(':')[1].strip()
+                solution_list = [file.strip() for file in solution_files.split(',')]
+                settings[current_folder].extend(solution_list)
+    return settings
+
+# Funkcja do dynamicznego importowania pliku i uruchomienia gry
+def run_game_from_file(file_name):
+    file_path = f"{file_name}.py"
+    
+    spec = importlib.util.spec_from_file_location(file_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[file_name] = module
+    spec.loader.exec_module(module)
+    
+    # Uruchomienie pętli gry w osobnym wątku
+    def game_thread():
+        global board
+        # Zwracanie zmiennej board co iterację gry
+        while True:
+            board = module.start_game()
+            update_gui(board)  # Przekazanie planszy do GUI
+    
+    # Tworzymy i uruchamiamy wątek gry
+    game_thread = threading.Thread(target=game_thread)
+    game_thread.daemon = True
+    game_thread.start()
+
+# Funkcja aktualizująca GUI
+def update_gui(board):
+    # Zaktualizuj GUI, np. planszę
+    # Tutaj zamień planszę na reprezentację tekstową w GUI
+    board_text = '\n'.join([' '.join(map(str, row)) for row in board])
+    board_label.config(text=board_text)
+
+# Wczytanie ustawień z pliku
+settings = read_settings('settings.txt')
+
+# Funkcja do aktualizacji drugiego menu w zależności od wyboru folderu
+def update_solution_menu(*args):
+    folder = folder_var.get()
+    solution_menu['menu'].delete(0, 'end')  # Wyczyść poprzednie opcje
+    for solution in settings.get(folder, []):
+        solution_menu['menu'].add_command(label=solution, command=tk._setit(solution_var, solution))
+    if settings.get(folder):
+        solution_var.set(settings[folder][0])
+
+# Funkcja do uruchomienia wybranego pliku
+def run_selected_game():
+    selected_file = solution_var.get()
+    run_game_from_file(selected_file)  # Uruchom grę w tle
+
+# Tworzenie głównego okna
+root = tk.Tk()
+root.title("Menu wyboru folderu i pliku")
+
+# Zmienna na wybrany folder
+folder_var = StringVar(root)
+folder_var.set(list(settings.keys())[0])  # Domyślny folder
+
+# Menu wyboru folderu
+folder_menu = OptionMenu(root, folder_var, *settings.keys())
+folder_menu.grid(row=0, column=0)
+
+# Zmienna na wybrany plik solution
+solution_var = StringVar(root)
+
+# Menu wyboru pliku solution
+solution_menu = OptionMenu(root, solution_var, *settings[folder_var.get()])
+solution_menu.grid(row=0, column=1)
+
+# Ustawienie początkowej wartości dla pliku
+solution_var.set(settings[folder_var.get()][0])
+
+# Etykieta do wyświetlania planszy
+board_label = tk.Label(root, text="Plansza gry:")
+board_label.grid(row=1, column=0, columnspan=2)
+
+# Dodanie przycisku do uruchomienia gry
+run_button = tk.Button(root, text="Uruchom grę", command=run_selected_game)
+run_button.grid(row=2, column=0, columnspan=2)
+
+# Aktualizowanie menu solution przy zmianie folderu
+folder_var.trace_add("write", update_solution_menu)
+
+root.mainloop()
+
+
+
+Wyjaśnienie zmian:
+Wątek gry (game_thread):
+
+Funkcja game_thread uruchamia pętlę gry w osobnym wątku, co pozwala na to, by gra działała niezależnie od GUI.
+W każdej iteracji gry, zmienna board jest aktualizowana i przekazywana do funkcji update_gui, która zajmuje się odświeżeniem GUI.
+update_gui(board):
+
+Funkcja ta przekształca zmienną board (np. listę list) w format tekstowy i aktualizuje etykietę board_label, by wyświetlić aktualny stan gry.
+Możesz zmienić tę funkcję, aby aktualizować GUI w bardziej zaawansowany sposób, np. rysując planszę na Canvas zamiast tekstu.
+Uruchomienie gry w tle:
+
+Funkcja run_game_from_file uruchamia grę w osobnym wątku, co umożliwia jej równoczesne działanie z GUI.
+Podsumowanie:
+Wykorzystanie wątków umożliwia uruchomienie gry w tle, nie blokując głównego interfejsu użytkownika.
+Przekazywanie zmiennej board do GUI odbywa się w każdej iteracji pętli gry. Dzięki temu możesz dynamicznie wyświetlać zmiany w GUI, np. zaktualizowaną planszę.
+Możesz modyfikować sposób wyświetlania board, np. zamiast tekstu wyświetlać ją na Canvas, by wizualnie pokazać grę.
+
+
