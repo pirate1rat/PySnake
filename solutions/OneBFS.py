@@ -69,7 +69,7 @@ def Compute(board: list, agent: Snake) -> list: #BFS
     return [vec2(agent.head.x + 1, agent.head.y)]
 
 list_of_moves = list()
-def Get_move(board, snake):
+def Get_move(board, snake, apple):
     global list_of_moves
 
     if len(list_of_moves) == 0:

@@ -1,5 +1,6 @@
 import copy
 import random
+import time
 from config import *
 from utils.vector2 import vec2
 from utils.snake import Snake
@@ -17,10 +18,14 @@ class Game:
     def initz(self):
         self.GAME_OVER = False
         self.GAME_RUNNING = False
+        self.GAME_LOOP = False
+
+        self.points = 0
+        self.turns = 0
+        self.timer = 0
 
         self.board = [[1 for _ in range(0, HEIGHT)] for _ in range(0, WIDTH)]
         self.player = Snake(WIDTH//2, HEIGHT//2, HEIGHT)
-        self.place_apple()
 
         for x in range(0, WIDTH):
             self.board[x][0] = 0
@@ -31,12 +36,19 @@ class Game:
     
         for segment in self.player.body:
             self.board[int(segment.x)][int(segment.y)] = Tile.SNAKE.value
+        self.place_apple()
 
     def update_game(self, module) -> bool:
+        self.turns += 1
+
         if not self.GAME_RUNNING:
-            return
+            return None
         
-        new_movec = module.Get_move(self.board, self.player)
+        start = time.perf_counter()
+        new_movec = module.Get_move(self.board, self.player, self.apple)
+        end = time.perf_counter()
+        self.timer += end - start
+
         #print(new_movec)
         #move_tuple = moves.pop(0)
         #new_movec = vec2(move_tuple[0], move_tuple[1])
@@ -47,22 +59,18 @@ class Game:
         self.player.head += self.player.movec
 
         if self.board[int(self.player.head.x)][int(self.player.head.y)] == Tile.LIMIT.value:
-            self.GAME_OVER = True
-            self.free()
-            return
+            return self.end_game()
+            
         elif self.board[int(self.player.head.x)][int(self.player.head.y)] == Tile.SNAKE.value:
-            self.GAME_OVER = True
-            self.free()
-            return
+            return self.end_game()
 
         if self.board[int(self.player.head.x)][int(self.player.head.y)] == Tile.APPLE.value:
             self.player.body.insert(0, copy.copy(self.player.head))
             self.board[int(self.player.head.x)][int(self.player.head.y)] = Tile.SNAKE.value
+            self.points += 1
 
             if len(self.player.body) == (WIDTH - 2)*(HEIGHT - 2):
-                self.GAME_OVER = True
-                self.free()
-                return
+                return self.end_game() 
             
             self.place_apple()
         else:
@@ -82,8 +90,28 @@ class Game:
         self.GAME_RUNNING = False
     def resume(self):
         if self.GAME_OVER:
-            return
-        self.GAME_RUNNING = True
+            return None
+        else:
+            self.GAME_RUNNING = True
+    def in_loop(self):
+        if self.GAME_OVER:
+            return None
+        else:
+            self.GAME_RUNNING = True
+            self.GAME_LOOP = True
+    def end_game(self):
+        pt = self.points
+        tr = self.turns
+        tm = self.timer
+        if self.GAME_LOOP == True:
+            self.restart()
+            self.GAME_RUNNING = True
+            self.GAME_LOOP = True
+        else:
+            self.GAME_OVER = True
+            self.free()
+        test = [pt, tr, tm]
+        return test
 
     def conv_to_rgb(self):
         rgb_board = [[BLACK for _ in range(0, HEIGHT)] for _ in range(0, WIDTH)]
@@ -97,7 +125,7 @@ class Game:
 
     def place_apple(self):
         while True:
-            apple = vec2(random.randint(1, WIDTH - 2), random.randint(1, HEIGHT - 2))
-            if self.board[int(apple.x)][int(apple.y)] == Tile.NORMAL.value:
-                self.board[int(apple.x)][int(apple.y)] = Tile.APPLE.value
+            self.apple = vec2(random.randint(1, WIDTH - 2), random.randint(1, HEIGHT - 2))
+            if self.board[int(self.apple.x)][int(self.apple.y)] == Tile.NORMAL.value:
+                self.board[int(self.apple.x)][int(self.apple.y)] = Tile.APPLE.value
                 break

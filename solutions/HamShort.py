@@ -1,7 +1,8 @@
 from config import *
-register("HamComplete")
+register("HamShort")
 
 from utils.vector2 import vec2
+from utils.tiles import *
 
 vec_field = [[None for _ in range(0, HEIGHT)] for _ in range(0, WIDTH)]
 first_time = True
@@ -35,13 +36,6 @@ def Compute():
                     vec_field[3+x][r] = vec2(-1, 0)
         vec_field[1][1] = vec2(1, 0)
         vec_field[2][HEIGHT - 2] = vec2(-1, 0)
-                
-    
-    """for i in range(0, HEIGHT):
-        for j in range(0, WIDTH):
-            print(vec_field[j][i], " | ", end="")
-        print()
-    print()"""
 
 def Get_move(board, snake, apple):
     global first_time
@@ -52,6 +46,18 @@ def Get_move(board, snake, apple):
 
     if vec_field[snake.head.x][snake.head.y] == -snake.movec:
         return vec2(1, 0)
+    
+
+    if WIDTH % 2 == 0:
+        if (1 < apple.x - snake.head.x and snake.head.y == 1 and
+            board[snake.head.x + 1][snake.head.y] == Tile.NORMAL.value):
+            return vec2(1, 0)
+        elif (apple.x < snake.head.x and snake.head.y == HEIGHT - 3 and 
+            board[snake.head.x][snake.head.y + 1] == Tile.NORMAL.value):
+            return vec2(0, 1)
+    elif HEIGHT % 2 == 0:
+        pass
+
     return vec_field[snake.head.x][snake.head.y]
     
 

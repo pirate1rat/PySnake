@@ -3,6 +3,7 @@ import importlib
 import tkinter as tk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import numpy as np
 
 from config import *
 import solutions
@@ -10,6 +11,13 @@ import game
 
 class GUI:
     def __init__(self, my_game: game.Game):
+        self.my_game = my_game
+        self.squares = list()
+        self.module = None
+        self.points = list()
+        self.turns = list()
+        self.times = list()
+
         self.main_window = self.set_main_window()
 
         self.game_frame = tk.Frame()
@@ -20,10 +28,6 @@ class GUI:
         self.stats_canv = self.set_stats_canvas(self.stat_frame)
 
         self.set_game_buttons(self.game_frame)
-
-        self.my_game = my_game
-        self.squares = []
-        self.module = None
 
         self.main_window.after(GAME_SPEED, self.update_game)
         self.main_window.mainloop()
@@ -61,6 +65,9 @@ class GUI:
         self._restart = tk.PhotoImage(file="images/restart.png")
         self._restart_button = tk.Button(self._active_buttons, image=self._restart, command= self.game_restart)
         self._restart_button.grid(row=0, column=3)
+        self._loop = tk.PhotoImage(file="images/loop.png")
+        self._loop_button = tk.Button(self._active_buttons, image=self._loop, command= self.game_in_loop)
+        self._loop_button.grid(row=1, column=0)
 
         self._option_buttons.pack()
         self._active_buttons.pack()
@@ -80,12 +87,29 @@ class GUI:
     def game_restart(self):
         self.my_game.restart()
         self.update_canv(self.snake_canv, self.squares, self.my_game.conv_to_rgb())
+    def game_in_loop(self):
+        self.my_game.in_loop()
 
     def update_game(self):
         if self.my_game.GAME_RUNNING:
-            print(self.module)
-            self.my_game.update_game(self.module)
-            self.update_canv(self.snake_canv, self.squares, self.my_game.conv_to_rgb())
+            parms = self.my_game.update_game(self.module)
+            #self.update_canv(self.snake_canv, self.squares, self.my_game.conv_to_rgb())
+            if parms:
+                print(parms)
+                self.points.append(parms[0])
+                self.turns.append(parms[1])
+                self.times.append(parms[2])
+
+                game_number = list(range(len(self.points)))
+                self.ax.plot(game_number, self.points, color='green')
+                self.ax.plot(game_number, self.turns, color='black')
+                avg = [self.points[i]/self.turns[i] for i in range(len(self.points))]
+                #self.ax.plot(game_number, avg, color='orange')
+                self.ax.plot(game_number, self.times, color='red')
+                print(np.mean(avg), np.mean(self.times))
+
+                self.stats_canv.draw()
+
         self.main_window.after(GAME_SPEED, self.update_game)
 
     def import_solution(self, *args):
@@ -94,7 +118,6 @@ class GUI:
             self.module = importlib.import_module(f"solutions.{self._solution_var.get()}")
         except ImportError as e:
             print(f"Nie udało się zaimportować {f"solutions.{self._solution_var.get()}"}", e)
-        print(self.module)
 
     def update_canv(self, snake_canv, squares, board):
         for sq in squares:
