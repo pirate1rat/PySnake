@@ -49,10 +49,6 @@ class Game:
         end = time.perf_counter()
         self.timer += end - start
 
-        #print(new_movec)
-        #move_tuple = moves.pop(0)
-        #new_movec = vec2(move_tuple[0], move_tuple[1])
-
         if new_movec != vec2(0, 0) and self.player.movec != -new_movec:
             self.player.movec = copy.copy(new_movec)
 

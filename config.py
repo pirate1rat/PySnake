@@ -1,4 +1,4 @@
-BLOCK_SIZE = 20 #in pixels
+BLOCK_SIZE = 30 #in pixels
 WIDTH = 12 #in blocks
 HEIGHT = 12
 GAME_SPEED = 1
