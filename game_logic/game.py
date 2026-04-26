@@ -3,17 +3,10 @@ import copy, random, time
 from enum import Enum, auto
 from game_logic.utils.vector2 import vec2
 from game_logic.utils.snake import Snake
-from game_logic.utils.Tiles import *
-from game_logic.utils.GameState import *
+from game_logic.utils.tiles import *
+from game_logic.utils.gamestate import *
 from dataclasses import dataclass
 from PyQt6.QtCore import QObject, pyqtSignal
-
-@dataclass
-class Colors:
-    GREEN = (0, 255, 0)
-    GREY = (69, 67, 61)
-    RED = (255, 0, 0)
-    BLACK = (0, 0, 0)
 
 
 @dataclass
@@ -28,11 +21,11 @@ class GameStatistics:
 
 class Game (QObject):
     game_state_changed = pyqtSignal(GameState)
-    game_inloop_changed = pyqtSignal(bool)
     return_statistics = pyqtSignal(GameStatistics)
 
     def __init__(self):
-        self._state = GameState.GAME_IS_RUNNING
+        super().__init__()
+        self._state = GameState.GAME_IS_PAUSED
         self._in_loop = False
         self.initialize()
 
@@ -98,7 +91,16 @@ class Game (QObject):
             self.board[int(self.player.head.x)][int(self.player.head.y)] = Tile.SNAKE
             old_poz = self.player.body.pop()
             self.board[int(old_poz.x)][int(old_poz.y)] = Tile.NORMAL
+        
+        #self.game_state_changed.emit(GameState.GAME_IS_RUNNING)
 
+    def place_apple(self):
+            while True:
+                self.apple = vec2(random.randint(1, WIDTH - 2), random.randint(1, HEIGHT - 2))
+                if self.board[int(self.apple.x)][int(self.apple.y)] == Tile.NORMAL:
+                    self.board[int(self.apple.x)][int(self.apple.y)] = Tile.APPLE
+                    break
+    
     # def free(self):
     #     self.GAME_RUNNING = False
     #     while self.player.body:
@@ -118,6 +120,7 @@ class Game (QObject):
         # else:
         #     self.states.GAME_IS_RUNNING = True
         self._state = GameState.GAME_IS_RUNNING
+        self.game_state_changed.emit(self._state)
     
     def run_in_loop(self):
         # if self.states.GAME_IS_OVER:
@@ -129,7 +132,7 @@ class Game (QObject):
             self._in_loop = True
     
     def end_game(self):
-        stats = copy(self.statistics)
+        stats = copy.copy(self.statistics)
         if self._in_loop:
             self.restart()
             #self.states.GAME_IS_RUNNING = True
@@ -139,20 +142,3 @@ class Game (QObject):
             self.game_state_changed.emit(self._state)
         
         self.return_statistics.emit(stats)
-        
-    def conv_to_rgb(self):
-        rgb_board = [[Colors.BLACK for _ in range(0, HEIGHT)] for _ in range(0, WIDTH)]
-        for i in range(0, HEIGHT):
-            for j in range(0, WIDTH):
-                match(self.board[j][i]):
-                    case Tile.SNAKE: rgb_board[j][i] = Colors.GREEN
-                    case Tile.LIMIT: rgb_board[j][i] = Colors.GREY
-                    case Tile.APPLE: rgb_board[j][i] = Colors.RED
-        return rgb_board
-
-    def place_apple(self):
-        while True:
-            self.apple = vec2(random.randint(1, WIDTH - 2), random.randint(1, HEIGHT - 2))
-            if self.board[int(self.apple.x)][int(self.apple.y)] == Tile.NORMAL:
-                self.board[int(self.apple.x)][int(self.apple.y)] = Tile.APPLE
-                break
