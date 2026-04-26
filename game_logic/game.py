@@ -1,13 +1,12 @@
-import copy
-import random
-import time
-from enum import Enum
 from config import *
+import copy, random, time
+from enum import Enum, auto
 from game_logic.utils.vector2 import vec2
 from game_logic.utils.snake import Snake
-from game_logic.utils.tiles import *
+from game_logic.utils.Tiles import *
+from game_logic.utils.GameState import *
 from dataclasses import dataclass
-
+from PyQt6.QtCore import QObject, pyqtSignal
 
 @dataclass
 class Colors:
@@ -16,16 +15,7 @@ class Colors:
     RED = (255, 0, 0)
     BLACK = (0, 0, 0)
 
-@dataclass
-class GameState:
-    """
-    
-    """
 
-    GAME_IS_OVER: bool = False
-    GAME_IS_RUNNING: bool = False
-    GAME_IN_LOOP: bool = False
-    
 @dataclass
 class GameStatistics:
     """
@@ -36,9 +26,14 @@ class GameStatistics:
     measured_time: int = 0
 
 
-class Game:
+class Game (QObject):
+    game_state_changed = pyqtSignal(GameState)
+    game_inloop_changed = pyqtSignal(bool)
+    return_statistics = pyqtSignal(GameStatistics)
+
     def __init__(self):
-        self.states = GameState()
+        self._state = GameState.GAME_IS_RUNNING
+        self._in_loop = False
         self.initialize()
 
     def initialize(self):
@@ -70,8 +65,8 @@ class Game:
 
         self.statistics.turns += 1
 
-        if not self.states.GAME_IS_RUNNING:
-            return None
+        if self._state != GameState.GAME_IS_RUNNING:
+            return 
         
         timer_start = time.perf_counter()
         new_movec = module.Get_move(self.board, self.player, self.apple)
@@ -84,10 +79,10 @@ class Game:
         self.player.head += self.player.movec
 
         if self.board[int(self.player.head.x)][int(self.player.head.y)] == Tile.LIMIT:
-            return self.end_game()
+            self.end_game()
             
         elif self.board[int(self.player.head.x)][int(self.player.head.y)] == Tile.SNAKE:
-            return self.end_game()
+            self.end_game()
 
         if self.board[int(self.player.head.x)][int(self.player.head.y)] == Tile.APPLE:
             self.player.body.insert(0, copy.copy(self.player.head))
@@ -95,7 +90,7 @@ class Game:
             self.statistics.points += 1
 
             if len(self.player.body) == (WIDTH - 2)*(HEIGHT - 2):
-                return self.end_game() 
+                self.end_game() 
             
             self.place_apple()
         else:
@@ -113,32 +108,38 @@ class Game:
         self.initialize()
     
     def pause(self):
-        self.states.GAME_IS_RUNNING = False
+        #self.states.GAME_IS_RUNNING = False
+        self._state = GameState.GAME_IS_PAUSED
+        self.game_state_changed.emit(self._state)
     
     def resume(self):
-        if self.states.GAME_IS_OVER:
-            return None
-        else:
-            self.states.GAME_IS_RUNNING = True
+        # if self.states.GAME_IS_OVER:
+        #     return None
+        # else:
+        #     self.states.GAME_IS_RUNNING = True
+        self._state = GameState.GAME_IS_RUNNING
     
-    def in_loop(self):
-        if self.states.GAME_IS_OVER:
-            return None
-        else:
-            self.states.GAME_IS_RUNNING = True
-            self.states.GAME_IN_LOOP = True
+    def run_in_loop(self):
+        # if self.states.GAME_IS_OVER:
+        #     return None
+        # else:
+        #     self.states.GAME_IS_RUNNING = True
+        #     self.states.GAME_IN_LOOP = True
+        if self._state != GameState.GAME_IS_OVER:
+            self._in_loop = True
     
     def end_game(self):
         stats = copy(self.statistics)
-        if self.states.GAME_IN_LOOP == True:
+        if self._in_loop:
             self.restart()
-            self.states.GAME_IS_RUNNING = True
-            self.states.GAME_IN_LOOP = True
+            #self.states.GAME_IS_RUNNING = True
+            self._in_loop = True
         else:
-            self.states.GAME_IS_OVER = True
-        return stats
+            self._state = GameState.GAME_IS_OVER
+            self.game_state_changed.emit(self._state)
         
-
+        self.return_statistics.emit(stats)
+        
     def conv_to_rgb(self):
         rgb_board = [[Colors.BLACK for _ in range(0, HEIGHT)] for _ in range(0, WIDTH)]
         for i in range(0, HEIGHT):
