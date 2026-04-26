@@ -3,9 +3,9 @@ import random
 import time
 from enum import Enum
 from config import *
-from utils.vector2 import vec2
-from utils.snake import Snake
-from utils.tiles import *
+from game_logic.utils.vector2 import vec2
+from game_logic.utils.snake import Snake
+from game_logic.utils.tiles import *
 from dataclasses import dataclass
 
 

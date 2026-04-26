@@ -8,7 +8,7 @@ import pandas as pd
 
 from config import *
 import solutions
-import game
+import game_logic.game as game
 
 class Chart:
     def __init__(self, frame, color):

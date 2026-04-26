@@ -1,8 +1,8 @@
 from config import *
 register("HamShort")
 
-from utils.vector2 import vec2
-from utils.tiles import *
+from game_logic.utils.vector2 import vec2
+from game_logic.utils.tiles import *
 
 vec_field = [[None for _ in range(0, HEIGHT)] for _ in range(0, WIDTH)]
 first_time = True
