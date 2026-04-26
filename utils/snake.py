@@ -1,4 +1,4 @@
-from .vector2 import *
+from vector2 import *
 #from queue import Queue
 
 class Snake:
