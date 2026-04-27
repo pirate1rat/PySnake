@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QPushButton, QComboBox
 from PyQt6.QtGui import QIcon
-from PyQt6.QtCore import QSize
+from PyQt6.QtCore import QSize, Qt
 
 class ControlPanel(QWidget):
     def __init__(self, game, registry: list, import_solution: function):
@@ -8,6 +8,7 @@ class ControlPanel(QWidget):
         self._game = game
 
         main_layout = QVBoxLayout()
+        main_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         # --- dropdown options ---
         self.combo = QComboBox()
@@ -15,6 +16,7 @@ class ControlPanel(QWidget):
         print(registry)
         self.combo.currentTextChanged.connect(import_solution)
         self.combo.setCurrentIndex(1)
+        self.combo.setFixedWidth(160)
 
         main_layout.addWidget(self.combo)
 
@@ -57,7 +59,8 @@ class ControlPanel(QWidget):
         grid.addWidget(self.pause_btn,   0, 1)
         grid.addWidget(self.restart_btn, 0, 3)
         grid.addWidget(self.loop_btn,    1, 0)
-        #grid.addWidget(self.visible_btn, 1, 1)
+        grid.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # grid.addWidget(self.visible_btn, 1, 1)
 
         main_layout.addLayout(grid)
         self.setLayout(main_layout)

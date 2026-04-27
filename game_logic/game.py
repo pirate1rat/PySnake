@@ -5,18 +5,9 @@ from game_logic.utils.vector2 import vec2
 from game_logic.utils.snake import Snake
 from game_logic.utils.tiles import *
 from game_logic.utils.gamestate import *
-from dataclasses import dataclass
+from game_logic.utils.gamedata import *
+
 from PyQt6.QtCore import QObject, pyqtSignal
-
-
-@dataclass
-class GameStatistics:
-    """
-    
-    """
-    points: int = 0
-    turns: int = 0
-    measured_time: int = 0
 
 
 class Game (QObject):
@@ -28,7 +19,6 @@ class Game (QObject):
         self._state = GameState.GAME_IS_PAUSED
         self._in_loop = False
         self.board = [[] for _ in range(WIDTH)] #board definition, seted in initialize()
-        print(hex(id(self.board)))
         self.initialize()
 
     def initialize(self):
@@ -41,7 +31,6 @@ class Game (QObject):
         #self.board = [[Tile.NORMAL for _ in range(0, HEIGHT)] for _ in range(0, WIDTH)]  #fields on board are described by enum 'Tile'
         for i in range(WIDTH):
             self.board[i][:] = [Tile.NORMAL for _ in range(0, HEIGHT)]
-        print(hex(id(self.board)))
 
         for x in range(0, WIDTH):
             self.board[x][0] = Tile.LIMIT
@@ -116,7 +105,6 @@ class Game (QObject):
     #         self.player.body.pop()
     def restart(self):
         #self.free()
-        print("click")
         # while self.player.body:
         #     self.player.body.pop()
         self.initialize()
@@ -141,8 +129,14 @@ class Game (QObject):
         # else:
         #     self.states.GAME_IS_RUNNING = True
         #     self.states.GAME_IN_LOOP = True
-        if self._state != GameState.GAME_IS_OVER:
-            self._in_loop = True
+        if self._state == GameState.GAME_IS_PAUSED:
+            self.resume()
+        elif self._state == GameState.GAME_IS_OVER:
+            self.restart()
+            self._state = GameState.GAME_IS_RUNNING
+        
+        self._in_loop = True
+        
     
     def end_game(self):
         stats = copy.copy(self.statistics)
