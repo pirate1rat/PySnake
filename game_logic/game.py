@@ -56,11 +56,11 @@ class Game (QObject):
         list of collected data: [scored_points, turns, total_time]
         """
 
-        self.statistics.turns += 1
-
         if self._state != GameState.GAME_IS_RUNNING:
             return 
         
+        self.statistics.turns += 1
+
         timer_start = time.perf_counter()
         new_movec = module.Get_move(self.board, self.player, self.apple)
         timer_end = time.perf_counter()
@@ -73,9 +73,11 @@ class Game (QObject):
 
         if self.board[int(self.player.head.x)][int(self.player.head.y)] == Tile.LIMIT:
             self.end_game()
+            return
             
         elif self.board[int(self.player.head.x)][int(self.player.head.y)] == Tile.SNAKE:
             self.end_game()
+            return
 
         if self.board[int(self.player.head.x)][int(self.player.head.y)] == Tile.APPLE:
             self.player.body.insert(0, copy.copy(self.player.head))
@@ -83,7 +85,8 @@ class Game (QObject):
             self.statistics.points += 1
 
             if len(self.player.body) == (WIDTH - 2)*(HEIGHT - 2):
-                self.end_game() 
+                self.end_game()
+                return
             
             self.place_apple()
         else:
@@ -135,10 +138,11 @@ class Game (QObject):
         stats = copy.copy(self.statistics)
         if self._in_loop:
             self.restart()
-            #self.states.GAME_IS_RUNNING = True
+            self._state = GameState.GAME_IS_RUNNING
             self._in_loop = True
         else:
             self._state = GameState.GAME_IS_OVER
             self.game_state_changed.emit(self._state)
+            print("hello game over?")
         
         self.return_statistics.emit(stats)

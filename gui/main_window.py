@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
         self._game = game
         #self.import_solution()
         self._game.game_state_changed.connect(self.on_state_changed)
-        self._game.game_state_changed.connect(self.update_game)
+        self._game.return_statistics.connect(self.got_stats)
 
         self._board_widget = BoardWidget(self._game.board, BLOCK_SIZE)
         self._control_panel = ControlPanel(self._game, get_registry(), self.import_solution)
@@ -74,6 +74,11 @@ class MainWindow(QMainWindow):
             print("gra zapauzowana")
         if state == GameState.GAME_IS_RUNNING:
             print("gra uruchomiona")
+        if state == GameState.GAME_IS_OVER:
+            print("gra zakończona")
+    
+    def got_stats(self, stats):
+        print(stats)
 
         
     def game_running(self):
