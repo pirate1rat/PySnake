@@ -27,6 +27,8 @@ class Game (QObject):
         super().__init__()
         self._state = GameState.GAME_IS_PAUSED
         self._in_loop = False
+        self.board = [[] for _ in range(WIDTH)] #board definition, seted in initialize()
+        print(hex(id(self.board)))
         self.initialize()
 
     def initialize(self):
@@ -36,8 +38,10 @@ class Game (QObject):
 
         self.statistics = GameStatistics()
 
-        self.board = [[Tile.NORMAL for _ in range(0, HEIGHT)] for _ in range(0, WIDTH)]  #fields on board are described by enum 'Tile'
-        self.player = Snake(WIDTH//2, HEIGHT//2, HEIGHT)
+        #self.board = [[Tile.NORMAL for _ in range(0, HEIGHT)] for _ in range(0, WIDTH)]  #fields on board are described by enum 'Tile'
+        for i in range(WIDTH):
+            self.board[i][:] = [Tile.NORMAL for _ in range(0, HEIGHT)]
+        print(hex(id(self.board)))
 
         for x in range(0, WIDTH):
             self.board[x][0] = Tile.LIMIT
@@ -46,6 +50,8 @@ class Game (QObject):
             self.board[0][y] = Tile.LIMIT
             self.board[WIDTH - 1][y] = Tile.LIMIT
     
+        self.player = Snake(WIDTH//2, HEIGHT//2, HEIGHT)
+
         for segment in self.player.body:
             self.board[int(segment.x)][int(segment.y)] = Tile.SNAKE
         self.place_apple()
@@ -110,7 +116,11 @@ class Game (QObject):
     #         self.player.body.pop()
     def restart(self):
         #self.free()
+        print("click")
+        # while self.player.body:
+        #     self.player.body.pop()
         self.initialize()
+        self.game_state_changed.emit(GameState.GAME_SET_READY)
     
     def pause(self):
         #self.states.GAME_IS_RUNNING = False
@@ -143,6 +153,5 @@ class Game (QObject):
         else:
             self._state = GameState.GAME_IS_OVER
             self.game_state_changed.emit(self._state)
-            print("hello game over?")
         
         self.return_statistics.emit(stats)

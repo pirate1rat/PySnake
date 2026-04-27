@@ -70,12 +70,17 @@ class MainWindow(QMainWindow):
         self.move(frame.topLeft())
     
     def on_state_changed(self, state):
-        if state == GameState.GAME_IS_PAUSED:
-            print("gra zapauzowana")
-        if state == GameState.GAME_IS_RUNNING:
-            print("gra uruchomiona")
-        if state == GameState.GAME_IS_OVER:
-            print("gra zakończona")
+        match state:
+            case GameState.GAME_IS_PAUSED:
+                print("gra zapauzowana")
+            case GameState.GAME_IS_RUNNING:
+                print("gra uruchomiona")
+            case GameState.GAME_IS_OVER:
+                print("gra zakończona")
+            case GameState.GAME_SET_READY:
+                print(hex(id(self._board_widget._board)))
+                self._board_widget.update()
+                print("gra zrestartowana")
     
     def got_stats(self, stats):
         print(stats)
