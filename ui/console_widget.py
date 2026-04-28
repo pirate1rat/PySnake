@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPlainTextEdit, QLabel
 from PyQt6.QtCore import Qt
 
-from game_logic.game import Game
-from game_logic.utils.gamedata import GameStatistics
+from core.engine import Game
+from models.game_data import GameStatistics
 from dataclasses import fields
 
 import numpy as np

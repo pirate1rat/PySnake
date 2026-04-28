@@ -1,8 +1,8 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QPushButton, QFileDialog
 from PyQt6.QtCore import QSize, Qt
 
-from game_logic.game import Game
-from game_logic.utils.gamedata import GameStatistics
+from core.engine import Game
+from models.game_data import GameStatistics
 
 import numpy as np
 import pandas as pd

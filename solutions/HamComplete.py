@@ -1,7 +1,7 @@
 from config import *
 register("HamComplete")
 
-from game_logic.utils.vector2 import vec2
+from utils.vector2 import vec2
 
 vec_field = [[None for _ in range(0, HEIGHT)] for _ in range(0, WIDTH)]
 first_time = True

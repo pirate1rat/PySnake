@@ -1,5 +1,4 @@
-from .vector2 import *
-#from queue import Queue
+from utils.vector2 import vec2
 
 class Snake:
     def __init__(self, x: int, y: int, HIGHT: int, length: int = 3) -> None:

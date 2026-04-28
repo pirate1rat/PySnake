@@ -2,16 +2,16 @@ from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout
 from PyQt6.QtGui import QGuiApplication
 from PyQt6.QtCore import QTimer
 
-from gui.board_widget import BoardWidget
-from gui.control_panel import ControlPanel
-from gui.chart_widget import ChartWidget
-from gui.console_widget import ConsoleWidget
+from ui.board_widget import BoardWidget
+from ui.control_panel import ControlPanel
+from ui.chart_widget import ChartWidget
+from ui.console_widget import ConsoleWidget
 
 from config import *
 
-from game_logic.game import Game
-from game_logic.utils.gamestate import *
-from game_logic.utils.tiles import *
+from core.engine import Game
+from models.game_state import *
+from models.tiles import *
 
 import importlib
 

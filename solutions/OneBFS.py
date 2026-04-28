@@ -1,9 +1,9 @@
 from config import *
 register("OneBFS")
 
-from game_logic.utils.snake import Snake
-from game_logic.utils.vector2 import *
-from game_logic.utils.tiles import *
+from models.snake import Snake
+from utils.vector2 import *
+from models.tiles import *
 
 def Compute(board: list, agent: Snake) -> list: #BFS
     que = list()

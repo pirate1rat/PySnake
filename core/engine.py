@@ -1,13 +1,16 @@
-from config import *
-import copy, random, time
-from enum import Enum, auto
-from game_logic.utils.vector2 import vec2
-from game_logic.utils.snake import Snake
-from game_logic.utils.tiles import *
-from game_logic.utils.gamestate import *
-from game_logic.utils.gamedata import *
-
 from PyQt6.QtCore import QObject, pyqtSignal
+
+from utils.vector2 import vec2
+from models.snake import Snake
+from models.tiles import *
+from models.game_state import *
+from models.game_data import *
+
+from config import *
+
+import copy
+import random
+import time
 
 
 class Game (QObject):

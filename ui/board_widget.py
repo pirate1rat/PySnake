@@ -4,7 +4,7 @@ from PyQt6.QtGui import QColor, QPainter
 
 from config import *
 
-from game_logic.utils.tiles import Tile
+from models.tiles import Tile
 
 
 @dataclass
