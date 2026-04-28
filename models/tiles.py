@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 class Tile(Enum):
-    LIMIT = auto()
-    NORMAL = auto()
+    BORDER = auto()
+    EMPTY = auto()
     SNAKE = auto()
     APPLE = auto()

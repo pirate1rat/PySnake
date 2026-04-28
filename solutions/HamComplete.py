@@ -35,13 +35,6 @@ def Compute():
                     vec_field[3+x][r] = vec2(-1, 0)
         vec_field[1][1] = vec2(1, 0)
         vec_field[2][HEIGHT - 2] = vec2(-1, 0)
-                
-    
-    """for i in range(0, HEIGHT):
-        for j in range(0, WIDTH):
-            print(vec_field[j][i], " | ", end="")
-        print()
-    print()"""
 
 def Get_move(board, snake, apple):
     global first_time

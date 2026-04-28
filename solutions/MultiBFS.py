@@ -30,7 +30,7 @@ def Compute(board: list, agent: Snake) -> list: #BFS
         pos = que.pop(0)
         #print(pos)
 
-        if board[int(pos.x)][int(pos.y)] == Tile.LIMIT:
+        if board[int(pos.x)][int(pos.y)] == Tile.BORDER:
             continue
         if board[int(pos.x)][int(pos.y)] == Tile.SNAKE:
             continue
@@ -57,13 +57,13 @@ def Compute(board: list, agent: Snake) -> list: #BFS
             que.append(vec2(pos.x, pos.y - 1))
             moves[int(pos.x)][int(pos.y - 1)] = vec2(pos.x, pos.y)
     
-    if board[int(agent.head.x)][int(agent.head.y - 1)] == Tile.NORMAL:
+    if board[int(agent.head.x)][int(agent.head.y - 1)] == Tile.EMPTY:
         return [vec2(agent.head.x, agent.head.y - 1)]
-    if board[int(agent.head.x - 1)][int(agent.head.y)] == Tile.NORMAL:
+    if board[int(agent.head.x - 1)][int(agent.head.y)] == Tile.EMPTY:
         return [vec2(agent.head.x - 1, agent.head.y)]
-    if board[int(agent.head.x)][int(agent.head.y + 1)] == Tile.NORMAL:
+    if board[int(agent.head.x)][int(agent.head.y + 1)] == Tile.EMPTY:
         return [vec2(agent.head.x, agent.head.y + 1)]
-    if board[int(agent.head.x + 1)][int(agent.head.y)] == Tile.NORMAL:
+    if board[int(agent.head.x + 1)][int(agent.head.y)] == Tile.EMPTY:
         return [vec2(agent.head.x + 1, agent.head.y)]
     
     return [vec2(agent.head.x + 1, agent.head.y)]

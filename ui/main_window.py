@@ -83,6 +83,7 @@ class MainWindow(QMainWindow):
         frame.moveCenter(screen.center())
         self.move(frame.topLeft())
     
+
     def on_state_changed(self, state):
         match state:
             case GameState.GAME_IS_PAUSED:
@@ -96,14 +97,14 @@ class MainWindow(QMainWindow):
                 print("gra zrestartowana")
 
         
-    def game_running(self):
-        self._game.resume()
-    def game_paused(self):
-        self._game.pause()
-    def restart(self):
-        self._game.restart()
-        self.update_canv(self.snake_canv, self.squares, self._game.conv_to_rgb())
-    def game_inloop(self):
-        self._game.in_loop()
-    def game_visible(self):
-        self.VISIBLE = not self.VISIBLE
+    # def game_running(self):
+    #     self._game.resume()
+    # def game_paused(self):
+    #     self._game.pause()
+    # def restart(self):
+    #     self._game.restart()
+    #     self.update_canv(self.snake_canv, self.squares, self._game.conv_to_rgb())
+    # def game_inloop(self):
+    #     self._game.in_loop()
+    # def game_visible(self):
+    #     self.VISIBLE = not self.VISIBLE

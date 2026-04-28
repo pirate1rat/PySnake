@@ -50,10 +50,10 @@ def Get_move(board, snake, apple):
 
     if WIDTH % 2 == 0:
         if (1 < apple.x - snake.head.x and snake.head.y == 1 and
-            board[snake.head.x + 1][snake.head.y] == Tile.NORMAL):
+            board[snake.head.x + 1][snake.head.y] == Tile.EMPTY):
             return vec2(1, 0)
         elif (apple.x < snake.head.x and snake.head.y == HEIGHT - 3 and 
-            board[snake.head.x][snake.head.y + 1] == Tile.NORMAL):
+            board[snake.head.x][snake.head.y + 1] == Tile.EMPTY):
             return vec2(0, 1)
     elif HEIGHT % 2 == 0:
         pass

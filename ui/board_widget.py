@@ -30,7 +30,7 @@ class BoardWidget (QWidget):
             for j in range(0, self.WIDTH):
                 match(self._board[j][i]):
                     case Tile.SNAKE: rgb_board[j][i] = Colors.GREEN
-                    case Tile.LIMIT: rgb_board[j][i] = Colors.GREY
+                    case Tile.BORDER: rgb_board[j][i] = Colors.GREY
                     case Tile.APPLE: rgb_board[j][i] = Colors.RED
         return rgb_board
 
