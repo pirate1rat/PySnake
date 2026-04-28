@@ -24,8 +24,8 @@ class ControlPanel(QWidget):
         grid = QGridLayout()
         for i in range(4):
             grid.setColumnStretch(i, 0)
-        for i in range(2):
-            grid.setRowStretch(i, 0)
+        # for i in range(2):
+        #     grid.setRowStretch(i, 0)
 
         self.play_btn = QPushButton()
         self.play_btn.setFixedSize(64, 64)
@@ -55,10 +55,10 @@ class ControlPanel(QWidget):
         # self.visible_btn.setIcon(QIcon("images/visible.png"))
         # self.visible_btn.clicked.connect(self._game.toggle_visible)
 
-        grid.addWidget(self.play_btn,    0, 0)
-        grid.addWidget(self.pause_btn,   0, 1)
-        grid.addWidget(self.restart_btn, 0, 3)
-        grid.addWidget(self.loop_btn,    1, 0)
+        grid.addWidget(self.play_btn, 0, 0)
+        grid.addWidget(self.pause_btn, 0, 1)
+        grid.addWidget(self.restart_btn, 0, 2)
+        grid.addWidget(self.loop_btn, 0, 3)
         grid.setAlignment(Qt.AlignmentFlag.AlignCenter)
         # grid.addWidget(self.visible_btn, 1, 1)
 

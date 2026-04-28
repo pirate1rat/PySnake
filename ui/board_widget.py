@@ -9,10 +9,10 @@ from models.tiles import Tile
 
 @dataclass
 class Colors:
-    GREEN = (0, 255, 0)
+    GREEN = (0, 120, 72)
     GREY = (69, 67, 61)
     RED = (255, 0, 0)
-    BLACK = (0, 0, 0)
+    LIGHT_GREY = (192, 192, 192)
 
 
 class BoardWidget (QWidget):
@@ -22,29 +22,37 @@ class BoardWidget (QWidget):
         self.WIDTH = len(board)
         self.HEIGHT = len(board[0])
         self.block_size = block_size
-        self.setFixedSize(len(board) * block_size, len(board[0]) * block_size)
-    
-    def conv_to_rgb(self):
-        rgb_board = [[Colors.BLACK for _ in range(0, self.HEIGHT)] for _ in range(0, self.WIDTH)]
-        for i in range(0, self.HEIGHT):
-            for j in range(0, self.WIDTH):
-                match(self._board[j][i]):
-                    case Tile.SNAKE: rgb_board[j][i] = Colors.GREEN
-                    case Tile.BORDER: rgb_board[j][i] = Colors.GREY
-                    case Tile.APPLE: rgb_board[j][i] = Colors.RED
-        return rgb_board
+        self.setFixedSize(450, 450)
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        rgb_board = self.conv_to_rgb()
+        
+        actual_board_width = self.WIDTH * self.block_size
+        actual_board_height = self.HEIGHT * self.block_size
+
+        offset_x = (self.width() - actual_board_width) // 2
+        offset_y = (self.height() - actual_board_height) // 2
+
+        painter.translate(offset_x, offset_y)
 
         for x in range(self.WIDTH):
             for y in range(self.HEIGHT):
-                color = QColor(*rgb_board[x][y])
+                tile = self._board[x][y]
+                
+                match tile:
+                    case Tile.SNAKE: 
+                        color = QColor(*Colors.GREEN)
+                    case Tile.APPLE: 
+                        color = QColor(*Colors.RED)
+                    case Tile.BORDER: 
+                        color = QColor(*Colors.GREY)
+                    case _: 
+                        color = QColor(*Colors.LIGHT_GREY)
+
                 painter.fillRect(
-                    x*self.block_size,
-                    y*self.block_size,
-                    self.block_size,
-                    self.block_size,
+                    x * self.block_size, 
+                    y * self.block_size, 
+                    self.block_size - 1,
+                    self.block_size - 1, 
                     color
                 )

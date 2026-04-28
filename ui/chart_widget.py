@@ -2,17 +2,16 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QPushB
 from PyQt6.QtCore import QSize, Qt
 
 from core.engine import Game
-from models.game_data import GameStatistics
+from models.game_data import *
 
 import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-from dataclasses import fields
 
 class Chart:
     def __init__(self, color):
-        self.fig = Figure(figsize=(6, 3))
+        self.fig = Figure(figsize=(5, 2))
         self.ax = self.fig.add_subplot(111)
         self.canvas = FigureCanvas(self.fig)
         self.color = color

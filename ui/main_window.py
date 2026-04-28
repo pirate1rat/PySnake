@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout
 from PyQt6.QtGui import QGuiApplication
-from PyQt6.QtCore import QTimer
+from PyQt6.QtCore import QTimer, Qt
 
 from ui.board_widget import BoardWidget
 from ui.control_panel import ControlPanel
@@ -37,7 +37,7 @@ class MainWindow(QMainWindow):
         left_layout = QVBoxLayout()
         right_layout = QVBoxLayout()
 
-        left_layout.addWidget(self._board_widget)
+        left_layout.addWidget(self._board_widget, alignment=Qt.AlignmentFlag.AlignCenter)
         left_layout.addWidget(self._control_panel)
         left_layout.addWidget(self._console_widget)
         right_layout.addWidget(self._chart_widget)

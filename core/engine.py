@@ -19,7 +19,7 @@ class Game (QObject):
 
     def __init__(self):
         super().__init__()
-        self._play_in_loop = False
+        self._run_in_loop = False
         self.board = [[] for _ in range(WIDTH)] # board definition, seted in initialize()
                                                 # fields on board are described by enum 'Tile'
         self.initialize()
@@ -117,10 +117,10 @@ class Game (QObject):
         Randomly position an apple on an empty tile of the game board.
 
         This method finds a random coordinate that is not currently occupied 
-        by the snake or other obstacles and updates the `board` object in-place.
+        by the snake and updates the `board` object in-place.
 
         Args:
-            board: The game board object or matrix to be modified.
+            board: The game board matrix to be modified.
         """
 
         while True:
@@ -150,7 +150,7 @@ class Game (QObject):
             self.restart()
             self._state = GameState.GAME_IS_RUNNING
         
-        self._play_in_loop = True
+        self._run_in_loop = True
         
     def end_game(self):
         """
@@ -168,10 +168,10 @@ class Game (QObject):
         """
 
         stats = copy.copy(self.statistics)
-        if self._play_in_loop:
+        if self._run_in_loop:
             self.restart()
             self._state = GameState.GAME_IS_RUNNING
-            self._play_in_loop = True
+            self._run_in_loop = True
         else:
             self._state = GameState.GAME_IS_OVER
             self.game_state_changed.emit(self._state)

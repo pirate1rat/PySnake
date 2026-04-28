@@ -1,7 +1,7 @@
 BLOCK_SIZE = 30 #in pixels
-WIDTH = 12 #in blocks
-HEIGHT = 12
-GAME_SPEED = 1
+WIDTH = 8 #in blocks
+HEIGHT = 8
+GAME_SPEED = 200
 
 registry = []
 
