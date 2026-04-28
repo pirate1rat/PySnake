@@ -22,9 +22,7 @@ class Game (QObject):
         self.initialize()
 
     def initialize(self):
-        """
-        Creates a new game, clears board, points and all data
-        """
+        """Creates a new game, clears board, points and all data"""
 
         self.statistics = GameStatistics()
 

@@ -5,6 +5,7 @@ from PyQt6.QtCore import QTimer
 from gui.board_widget import BoardWidget
 from gui.control_panel import ControlPanel
 from gui.chart_widget import ChartWidget
+from gui.console_widget import ConsoleWidget
 
 from config import *
 
@@ -29,6 +30,7 @@ class MainWindow(QMainWindow):
         self._board_widget = BoardWidget(self._game.board, BLOCK_SIZE)
         self._control_panel = ControlPanel(self._game, get_registry(), self.import_solution)
         self._chart_widget = ChartWidget(self._game)
+        self._console_widget = ConsoleWidget(self._game)
 
         central = QWidget()
         main_layout = QHBoxLayout(central)
@@ -37,6 +39,7 @@ class MainWindow(QMainWindow):
 
         left_layout.addWidget(self._board_widget)
         left_layout.addWidget(self._control_panel)
+        left_layout.addWidget(self._console_widget)
         right_layout.addWidget(self._chart_widget)
 
         central.setLayout(main_layout)

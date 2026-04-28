@@ -74,6 +74,7 @@ class ChartWidget(QWidget):
 
     def got_stats(self, stats: GameStatistics):
         """Takes set of data from ended game and adds to history"""
+
         self.num_of_games += 1
         
         for key in self.keys:
@@ -85,18 +86,21 @@ class ChartWidget(QWidget):
 
     def refresh_chart1(self, *_):
         """Retrieve currently selected key and displays first chart"""
+
         selected_stat = self.chart1_box.currentText()
         if selected_stat in self.history:
             self.update_chart(self.stat_cv1, self.history[selected_stat], selected_stat)
 
     def refresh_chart2(self, *_):
         """Retrieve currently selected key and displays second chart"""
+
         selected_stat = self.chart2_box.currentText()
         if selected_stat in self.history:
             self.update_chart(self.stat_cv2, self.history[selected_stat], selected_stat)
 
     def update_chart(self, chart: Chart, datay, title: str):
         """Main logic to draw charts"""
+
         chart.ax.clear()
         
         datax = range(1, len(datay) + 1)
@@ -118,6 +122,7 @@ class ChartWidget(QWidget):
 
     def clear_data(self):
         """Clears history and refreshes charts"""
+
         self.num_of_games = 0
         self.history = {key: [] for key in self.keys}
         self.refresh_chart1()
@@ -125,6 +130,7 @@ class ChartWidget(QWidget):
     
     def save_data(self):
         """Saves data to .csv file"""
+        
         if self.num_of_games == 0:
             print("No data to save")
             return
