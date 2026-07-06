@@ -21,14 +21,11 @@ class Engine (QObject):
 
     def __init__(self, settings: GameSettings):
         super().__init__()
-        self.settings = settings
         self._run_in_loop = False
         self.is_solution_init = False
-        self.board = [[] for _ in range(self.settings.width)] # board definition, seted in initialize()
-                                                # fields on board are described by enum 'Tile'
-        self.initialize()
+        self.initialize(settings)
 
-    def initialize(self, initial_state: GameState = GameState.GAME_IS_PAUSED):
+    def initialize(self, settings: GameSettings, initial_state: GameState = GameState.GAME_IS_PAUSED):
         """
         Initialize a new game session by resetting the board and statistics.
 
@@ -44,6 +41,8 @@ class Engine (QObject):
 
         self._state = initial_state
         self.statistics = GameStatistics()
+        self.settings = settings
+        self.board = [[] for _ in range(settings.width)]
 
         for i in range(self.settings.width):
             self.board[i][:] = [Tile.EMPTY for _ in range(0, self.settings.height)]
@@ -143,8 +142,8 @@ class Engine (QObject):
     
 
     # --- Methods to comunicate with engine ---
-    def restart(self):
-        self.initialize()
+    def restart(self, settings: GameSettings):
+        self.initialize(settings)
         self.game_state_changed.emit(GameState.GAME_SET_READY)
     
     def pause(self):
@@ -159,7 +158,7 @@ class Engine (QObject):
         if self._state == GameState.GAME_IS_PAUSED:
             self.resume()
         elif self._state == GameState.GAME_IS_OVER:
-            self.restart()
+            self.restart(self.settings)
             self._state = GameState.GAME_IS_RUNNING
         
         self._run_in_loop = True
@@ -191,7 +190,7 @@ class Engine (QObject):
 
         stats = copy.copy(self.statistics)
         if self._run_in_loop:
-            self.restart()
+            self.restart(self.settings)
             self._state = GameState.GAME_IS_RUNNING
             self._run_in_loop = True
         else:

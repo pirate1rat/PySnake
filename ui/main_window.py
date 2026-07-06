@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
 
         settings_menu = menu_bar.addMenu("Settings")
         setting_action = QAction("Parameters", self)
-        setting_action.triggered.connect(self.open_parameters)
+        setting_action.triggered.connect(self.open_parameters_window)
         settings_menu.addAction(setting_action)
 
 
@@ -93,28 +93,23 @@ class MainWindow(QMainWindow):
     def on_state_changed(self, state):
         match state:
             case GameState.GAME_IS_PAUSED:
-                print("gra zapauzowana")
+                print("game paused")
             case GameState.GAME_IS_RUNNING:
-                print("gra uruchomiona")
+                print("game running")
             case GameState.GAME_IS_OVER:
-                print("gra zakończona")
+                print("game ended")
             case GameState.GAME_SET_READY:
                 self._board_widget.update()
-                print("gra zrestartowana")
+                print("game restarted")
 
 
-    def open_parameters(self):
-        self.settings_window = SettingsWindow()
+    def open_parameters_window(self):
+        self.settings_window = SettingsWindow(self._game)
+        self.settings_window.settings_changed.connect(self.apply_new_settings)
         self.settings_window.show()
-        
-    # def game_running(self):
-    #     self._game.resume()
-    # def game_paused(self):
-    #     self._game.pause()
-    # def restart(self):
-    #     self._game.restart()
-    #     self.update_canv(self.snake_canv, self.squares, self._game.conv_to_rgb())
-    # def game_inloop(self):
-    #     self._game.in_loop()
-    # def game_visible(self):
-    #     self.VISIBLE = not self.VISIBLE
+    
+
+    def apply_new_settings(self, new_settings: GameSettings):
+        self.settings = new_settings
+        self._game.initialize(self.settings)
+    

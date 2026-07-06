@@ -1,48 +1,17 @@
-from registry import *
-register("MultiBFS")
+from models.game_api import GameContext, Tile, Snake, vec2, register
 
-from models.snake import Snake
-from utils.vector2 import *
-from models.tiles import *
+@register
+class MultiBFS():
+    def __init__(self, ctx: GameContext):
+        self.list_of_moves = list()
 
-def Compute(board: list, agent: Snake) -> list: #BFS
-    que = list()
-    pat = list()
-    moves = [[vec2(0, 0) for _ in range(HEIGHT)] for _ in range(WIDTH)]
+    def compute(self, ctx: GameContext) -> list: #BFS
+        que = list()
+        pat = list()
+        moves = [[vec2(0, 0) for _ in range(ctx.height)] for _ in range(ctx.width)]
 
-    pos = agent.head
-    moves[int(agent.head.x)][int(agent.head.y)] = vec2(-1, -1)
-
-    if moves[int(pos.x + 1)][int(pos.y)] == vec2(0, 0):
-        que.append(vec2(pos.x + 1, pos.y))
-        moves[int(pos.x + 1)][int(pos.y)] = vec2(pos.x, pos.y)
-    if moves[int(pos.x - 1)][int(pos.y)] == vec2(0, 0):
-        que.append(vec2(pos.x - 1, pos.y))
-        moves[int(pos.x - 1)][int(pos.y)] = vec2(pos.x, pos.y)
-    if moves[int(pos.x)][int(pos.y + 1)] == vec2(0, 0):
-        que.append(vec2(pos.x, pos.y + 1))
-        moves[int(pos.x)][int(pos.y + 1)] = vec2(pos.x, pos.y)
-    if moves[int(pos.x)][int(pos.y - 1)] == vec2(0, 0):
-        que.append(vec2(pos.x, pos.y - 1))
-        moves[int(pos.x)][int(pos.y - 1)] = vec2(pos.x, pos.y)
-
-    while len(que) != 0:
-        pos = que.pop(0)
-        #print(pos)
-
-        if board[int(pos.x)][int(pos.y)] == Tile.BORDER:
-            continue
-        if board[int(pos.x)][int(pos.y)] == Tile.SNAKE:
-            continue
-
-        if board[int(pos.x)][int(pos.y)] == Tile.APPLE:
-            while pos != agent.head:
-                pat.append(pos)
-                #print("#######",pos)
-                pos = moves[int(pos.x)][int(pos.y)]
-            #print(pat)
-            pat.reverse()
-            return pat
+        pos = ctx.snake.head
+        moves[int(ctx.snake.head.x)][int(ctx.snake.head.y)] = vec2(-1, -1)
 
         if moves[int(pos.x + 1)][int(pos.y)] == vec2(0, 0):
             que.append(vec2(pos.x + 1, pos.y))
@@ -56,21 +25,46 @@ def Compute(board: list, agent: Snake) -> list: #BFS
         if moves[int(pos.x)][int(pos.y - 1)] == vec2(0, 0):
             que.append(vec2(pos.x, pos.y - 1))
             moves[int(pos.x)][int(pos.y - 1)] = vec2(pos.x, pos.y)
-    
-    if board[int(agent.head.x)][int(agent.head.y - 1)] == Tile.EMPTY:
-        return [vec2(agent.head.x, agent.head.y - 1)]
-    if board[int(agent.head.x - 1)][int(agent.head.y)] == Tile.EMPTY:
-        return [vec2(agent.head.x - 1, agent.head.y)]
-    if board[int(agent.head.x)][int(agent.head.y + 1)] == Tile.EMPTY:
-        return [vec2(agent.head.x, agent.head.y + 1)]
-    if board[int(agent.head.x + 1)][int(agent.head.y)] == Tile.EMPTY:
-        return [vec2(agent.head.x + 1, agent.head.y)]
-    
-    return [vec2(agent.head.x + 1, agent.head.y)]
 
-list_of_moves = list()
-def Get_move(board, snake, apple):
-    global list_of_moves
+        while len(que) != 0:
+            pos = que.pop(0)
 
-    path = Compute(board, snake) #BFS
-    return path[0] - snake.head
+            if ctx.board[int(pos.x)][int(pos.y)] == Tile.BORDER:
+                continue
+            if ctx.board[int(pos.x)][int(pos.y)] == Tile.SNAKE:
+                continue
+
+            if ctx.board[int(pos.x)][int(pos.y)] == Tile.APPLE:
+                while pos != ctx.snake.head:
+                    pat.append(pos)
+                    pos = moves[int(pos.x)][int(pos.y)]
+                pat.reverse()
+                return pat
+
+            if moves[int(pos.x + 1)][int(pos.y)] == vec2(0, 0):
+                que.append(vec2(pos.x + 1, pos.y))
+                moves[int(pos.x + 1)][int(pos.y)] = vec2(pos.x, pos.y)
+            if moves[int(pos.x - 1)][int(pos.y)] == vec2(0, 0):
+                que.append(vec2(pos.x - 1, pos.y))
+                moves[int(pos.x - 1)][int(pos.y)] = vec2(pos.x, pos.y)
+            if moves[int(pos.x)][int(pos.y + 1)] == vec2(0, 0):
+                que.append(vec2(pos.x, pos.y + 1))
+                moves[int(pos.x)][int(pos.y + 1)] = vec2(pos.x, pos.y)
+            if moves[int(pos.x)][int(pos.y - 1)] == vec2(0, 0):
+                que.append(vec2(pos.x, pos.y - 1))
+                moves[int(pos.x)][int(pos.y - 1)] = vec2(pos.x, pos.y)
+        
+        if ctx.board[int(ctx.snake.head.x)][int(ctx.snake.head.y - 1)] == Tile.EMPTY:
+            return [vec2(ctx.snake.head.x, ctx.snake.head.y - 1)]
+        if ctx.board[int(ctx.snake.head.x - 1)][int(ctx.snake.head.y)] == Tile.EMPTY:
+            return [vec2(ctx.snake.head.x - 1, ctx.snake.head.y)]
+        if ctx.board[int(ctx.snake.head.x)][int(ctx.snake.head.y + 1)] == Tile.EMPTY:
+            return [vec2(ctx.snake.head.x, ctx.snake.head.y + 1)]
+        if ctx.board[int(ctx.snake.head.x + 1)][int(ctx.snake.head.y)] == Tile.EMPTY:
+            return [vec2(ctx.snake.head.x + 1, ctx.snake.head.y)]
+        
+        return [vec2(ctx.snake.head.x + 1, ctx.snake.head.y)]
+
+    def get_move(self, ctx: GameContext) -> vec2:
+        path = self.compute(ctx) #BFS
+        return path[0] - ctx.snake.head

@@ -18,11 +18,14 @@ class Colors:
 class BoardWidget (QWidget):
     def __init__(self, board, block_size):
         super().__init__()
+        self.setFixedSize(450, 450)
+        self.initialize(board, block_size)
+
+    def initialize(self, board, block_size):
         self._board = board
         self.WIDTH = len(board)
         self.HEIGHT = len(board[0])
         self.block_size = block_size
-        self.setFixedSize(450, 450)
 
     def paintEvent(self, event):
         painter = QPainter(self)
