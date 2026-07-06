@@ -1,13 +1,21 @@
 from PyQt6.QtWidgets import QApplication
-from core.engine import Game
+from core.engine import Engine
 from ui.main_window import MainWindow
 import sys
 import solutions
 
+from models.game_settings import GameSettings
+import json
+from pydantic import TypeAdapter
+
 def main():
-    snake = Game()
+    with open("settings.json") as f:
+        data = json.load(f)
+    settings = TypeAdapter(GameSettings).validate_python(data)
+
+    snake = Engine(settings)
     app = QApplication(sys.argv)
-    window = MainWindow(snake)
+    window = MainWindow(snake, settings)
     window.show()
     sys.exit(app.exec())
 

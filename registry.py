@@ -1,8 +1,3 @@
-BLOCK_SIZE = 30 #in pixels
-WIDTH = 8 #in blocks
-HEIGHT = 8
-GAME_SPEED = 200
-
 registry = []
 
 def register(solution_name):

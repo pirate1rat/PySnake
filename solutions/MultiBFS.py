@@ -1,4 +1,4 @@
-from config import *
+from registry import *
 register("MultiBFS")
 
 from models.snake import Snake

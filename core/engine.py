@@ -5,22 +5,24 @@ from models.snake import Snake
 from models.tiles import Tile
 from models.game_state import GameState
 from models.game_data import GameStatistics
+from models.game_settings import GameSettings
 
-from config import *
+from registry import *
 
 import copy
 import random
 import time
 
 
-class Game (QObject):
+class Engine (QObject):
     game_state_changed = pyqtSignal(GameState)
     return_statistics = pyqtSignal(GameStatistics)
 
-    def __init__(self):
+    def __init__(self, settings: GameSettings):
         super().__init__()
+        self.settings = settings
         self._run_in_loop = False
-        self.board = [[] for _ in range(WIDTH)] # board definition, seted in initialize()
+        self.board = [[] for _ in range(self.settings.self.settings.width)] # board definition, seted in initialize()
                                                 # fields on board are described by enum 'Tile'
         self.initialize()
 
@@ -41,17 +43,17 @@ class Game (QObject):
         self._state = initial_state
         self.statistics = GameStatistics()
 
-        for i in range(WIDTH):
-            self.board[i][:] = [Tile.EMPTY for _ in range(0, HEIGHT)]
+        for i in range(self.settings.width):
+            self.board[i][:] = [Tile.EMPTY for _ in range(0, self.settings.height)]
 
-        for x in range(0, WIDTH):
+        for x in range(0, self.settings.width):
             self.board[x][0] = Tile.BORDER
-            self.board[x][HEIGHT - 1] = Tile.BORDER
-        for y in range(0, HEIGHT):
+            self.board[x][self.settings.height - 1] = Tile.BORDER
+        for y in range(0, self.settings.height):
             self.board[0][y] = Tile.BORDER
-            self.board[WIDTH - 1][y] = Tile.BORDER
+            self.board[self.settings.width - 1][y] = Tile.BORDER
     
-        self.player = Snake(WIDTH//2, HEIGHT//2, HEIGHT)
+        self.player = Snake(self.settings.width//2, self.settings.height//2, self.settings.height)
 
         for segment in self.player.body:
             self.board[int(segment.x)][int(segment.y)] = Tile.SNAKE
@@ -101,7 +103,7 @@ class Game (QObject):
             self.board[int(self.player.head.x)][int(self.player.head.y)] = Tile.SNAKE
             self.statistics.points += 1
 
-            if len(self.player.body) == (WIDTH - 2)*(HEIGHT - 2):
+            if len(self.player.body) == (self.settings.width - 2)*(self.settings.height - 2):
                 self.end_game()
                 return
             
@@ -124,7 +126,7 @@ class Game (QObject):
         """
 
         while True:
-            self.apple = vec2(random.randint(1, WIDTH - 2), random.randint(1, HEIGHT - 2))
+            self.apple = vec2(random.randint(1, self.settings.width - 2), random.randint(1, self.settings.height - 2))
             if board[int(self.apple.x)][int(self.apple.y)] == Tile.EMPTY:
                 board[int(self.apple.x)][int(self.apple.y)] = Tile.APPLE
                 break

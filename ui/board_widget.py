@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from PyQt6.QtWidgets import QWidget, QVBoxLayout
 from PyQt6.QtGui import QColor, QPainter
 
-from config import *
+from registry import *
 
 from models.tiles import Tile
 

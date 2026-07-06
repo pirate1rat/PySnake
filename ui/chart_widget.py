@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QPushButton, QFileDialog
 from PyQt6.QtCore import QSize, Qt
 
-from core.engine import Game
+from core.engine import Engine
 from models.game_data import *
 
 import numpy as np
@@ -17,7 +17,7 @@ class Chart:
         self.color = color
 
 class ChartWidget(QWidget):
-    def __init__(self, game: Game):
+    def __init__(self, game: Engine):
         super().__init__()
 
         self._game = game

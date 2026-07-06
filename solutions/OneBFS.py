@@ -1,4 +1,4 @@
-from config import *
+from registry import *
 register("OneBFS")
 
 from models.snake import Snake

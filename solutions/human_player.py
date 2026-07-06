@@ -1,4 +1,4 @@
-from config import register
+from registry import register
 register("human_player")
 
 def Get_move():

@@ -1,4 +1,4 @@
-from config import *
+from registry import *
 register("HamShort")
 
 from utils.vector2 import vec2

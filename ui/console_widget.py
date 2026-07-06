@@ -1,14 +1,14 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPlainTextEdit, QLabel
 from PyQt6.QtCore import Qt
 
-from core.engine import Game
+from core.engine import Engine
 from models.game_data import GameStatistics
 from dataclasses import fields
 
 import numpy as np
 
 class ConsoleWidget(QWidget):
-    def __init__(self, game: Game):
+    def __init__(self, game: Engine):
         super().__init__()
         self._game = game
         self._game.return_statistics.connect(self.add_to_history)
@@ -65,7 +65,7 @@ class ConsoleWidget(QWidget):
             turns = self.history.get('turns', [0])[-1]
             total_time = self.history.get('times', [0])[-1] 
             
-            new_line = f"Game #{self.num_of_games}: points = {points}, turns = {turns}, time = {total_time}s"
+            new_line = f"Game #{self.num_of_games}: points = {points}, turns = {turns}, time = {total_time:.10f}s"
             
             self._log_history.insert(0, new_line)
             self._log_history = self._log_history[:max_lines]

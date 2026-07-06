@@ -1,15 +1,17 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout
-from PyQt6.QtGui import QGuiApplication
+from PyQt6.QtGui import QGuiApplication, QAction
 from PyQt6.QtCore import QTimer, Qt
 
 from ui.board_widget import BoardWidget
 from ui.control_panel import ControlPanel
 from ui.chart_widget import ChartWidget
 from ui.console_widget import ConsoleWidget
+from ui.settings_window import SettingsWindow
 
-from config import *
+from registry import *
 
-from core.engine import Game
+from core.engine import Engine
+from models.game_settings import GameSettings
 from models.game_state import *
 from models.tiles import *
 
@@ -17,8 +19,9 @@ import importlib
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, game: Game):
+    def __init__(self, game: Engine, settings: GameSettings):
         super().__init__()
+        self.settings = settings
         self.setWindowTitle("PySnake")
         self.resize(1050, 950)
         self.center()
@@ -27,7 +30,7 @@ class MainWindow(QMainWindow):
         self._game = game
         self._game.game_state_changed.connect(self.on_state_changed)
 
-        self._board_widget = BoardWidget(self._game.board, BLOCK_SIZE)
+        self._board_widget = BoardWidget(self._game.board, self.settings.block_size)
         self._control_panel = ControlPanel(self._game, get_registry(), self.import_solution)
         self._chart_widget = ChartWidget(self._game)
         self._console_widget = ConsoleWidget(self._game)
@@ -36,6 +39,7 @@ class MainWindow(QMainWindow):
         main_layout = QHBoxLayout(central)
         left_layout = QVBoxLayout()
         right_layout = QVBoxLayout()
+        menu_bar = self.menuBar()
 
         left_layout.addWidget(self._board_widget, alignment=Qt.AlignmentFlag.AlignCenter)
         left_layout.addWidget(self._control_panel)
@@ -52,10 +56,15 @@ class MainWindow(QMainWindow):
         # central.setLayout(layout)
         # self.setCentralWidget(central)
 
+        settings_menu = menu_bar.addMenu("Settings")
+        setting_action = QAction("Parameters", self)
+        setting_action.triggered.connect(self.open_parameters)
+        settings_menu.addAction(setting_action)
+
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_game)
-        self.timer.start(GAME_SPEED)  # ms
+        self.timer.start(self.settings.game_speed)  # ms
 
     def import_solution(self, module_name):
         print(f"chosen: {module_name}")
@@ -72,7 +81,7 @@ class MainWindow(QMainWindow):
         #     if parameters:
         #         self.statistics(parameters)
 
-        # self.main_window.after(GAME_SPEED, self.update_game)
+        # self.main_window.after(self.settings.game_speed, self.update_game)
         self._game.update_game(self.module)
         self._board_widget.update()
 
@@ -96,6 +105,10 @@ class MainWindow(QMainWindow):
                 self._board_widget.update()
                 print("gra zrestartowana")
 
+
+    def open_parameters(self):
+        self.settings_window = SettingsWindow()
+        self.settings_window.show()
         
     # def game_running(self):
     #     self._game.resume()
