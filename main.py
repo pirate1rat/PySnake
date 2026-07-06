@@ -13,9 +13,9 @@ def main():
         data = json.load(f)
     settings = TypeAdapter(GameSettings).validate_python(data)
 
-    snake = Engine(settings)
+    engine = Engine(settings)
     app = QApplication(sys.argv)
-    window = MainWindow(snake, settings)
+    window = MainWindow(engine, settings)
     window.show()
     sys.exit(app.exec())
 

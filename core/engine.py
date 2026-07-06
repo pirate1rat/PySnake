@@ -6,6 +6,7 @@ from models.tiles import Tile
 from models.game_state import GameState
 from models.game_data import GameStatistics
 from models.game_settings import GameSettings
+from models.game_api import GameContext
 
 from registry import *
 
@@ -22,7 +23,8 @@ class Engine (QObject):
         super().__init__()
         self.settings = settings
         self._run_in_loop = False
-        self.board = [[] for _ in range(self.settings.self.settings.width)] # board definition, seted in initialize()
+        self.is_solution_init = False
+        self.board = [[] for _ in range(self.settings.width)] # board definition, seted in initialize()
                                                 # fields on board are described by enum 'Tile'
         self.initialize()
 
@@ -59,7 +61,7 @@ class Engine (QObject):
             self.board[int(segment.x)][int(segment.y)] = Tile.SNAKE
         self.place_apple(self.board)
 
-    def update_game(self, module):
+    def update_game(self):
         """
         Process a single game tick using the provided logic module.
 
@@ -77,12 +79,20 @@ class Engine (QObject):
         """
 
         if self._state != GameState.GAME_IS_RUNNING:
-            return 
+            return
+        if not self.is_solution_init:
+            raise ImportError("Uninitialized solution")
         
         self.statistics.turns += 1
 
         timer_start = time.perf_counter()
-        new_movec = module.Get_move(self.board, self.player, self.apple)
+        new_movec = self.solution_class.get_move(GameContext(
+            self.board, 
+            self.player, 
+            self.apple, 
+            self.settings.width, 
+            self.settings.height
+        ))
         timer_end = time.perf_counter()
         self.statistics.measured_time += timer_end - timer_start
 
@@ -132,7 +142,7 @@ class Engine (QObject):
                 break
     
 
-    # --- Methods to comunicate with game ---
+    # --- Methods to comunicate with engine ---
     def restart(self):
         self.initialize()
         self.game_state_changed.emit(GameState.GAME_SET_READY)
@@ -153,7 +163,17 @@ class Engine (QObject):
             self._state = GameState.GAME_IS_RUNNING
         
         self._run_in_loop = True
-        
+    
+    def initialize_solution(self, SolutionClass):
+        self.solution_class = SolutionClass(GameContext(
+            self.board, 
+            self.player, 
+            self.apple, 
+            self.settings.width, 
+            self.settings.height
+        ))
+        self.is_solution_init = True
+
     def end_game(self):
         """
         Finalize the current game session and broadcast final results.

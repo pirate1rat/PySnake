@@ -15,7 +15,7 @@ class ControlPanel(QWidget):
         self.combo.addItems(registry)
         print(registry)
         self.combo.currentTextChanged.connect(import_solution)
-        self.combo.setCurrentIndex(1)
+        self.combo.setCurrentIndex(0)
         self.combo.setFixedWidth(160)
 
         main_layout.addWidget(self.combo)

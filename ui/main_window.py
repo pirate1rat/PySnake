@@ -31,7 +31,7 @@ class MainWindow(QMainWindow):
         self._game.game_state_changed.connect(self.on_state_changed)
 
         self._board_widget = BoardWidget(self._game.board, self.settings.block_size)
-        self._control_panel = ControlPanel(self._game, get_registry(), self.import_solution)
+        self._control_panel = ControlPanel(self._game, get_registry_str(), self.import_solution)
         self._chart_widget = ChartWidget(self._game)
         self._console_widget = ConsoleWidget(self._game)
 
@@ -66,12 +66,9 @@ class MainWindow(QMainWindow):
         self.timer.timeout.connect(self.update_game)
         self.timer.start(self.settings.game_speed)  # ms
 
-    def import_solution(self, module_name):
-        print(f"chosen: {module_name}")
-        try:
-            self.module = importlib.import_module(f"solutions.{module_name}")
-        except ImportError as e:
-            print(f"Unable to load {f"solutions.{module_name}"}", e)
+    def import_solution(self, module_class_name):
+        print(f"chosen: {module_class_name}")
+        self._game.initialize_solution(get_registry()[module_class_name])
 
     def update_game(self):
         # if self.my_game.GAME_RUNNING:
@@ -82,7 +79,7 @@ class MainWindow(QMainWindow):
         #         self.statistics(parameters)
 
         # self.main_window.after(self.settings.game_speed, self.update_game)
-        self._game.update_game(self.module)
+        self._game.update_game()
         self._board_widget.update()
 
 

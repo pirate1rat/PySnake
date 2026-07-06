@@ -1,64 +1,59 @@
-from registry import *
-register("HamShort")
+from models.game_api import GameContext, Tile, Snake, vec2, register
 
-from utils.vector2 import vec2
-from models.tiles import *
+@register
+class HamShort():
+    def __init__(self, ctx: GameContext):
+        self.vec_field = [[None for _ in range(0, ctx.height)] for _ in range(0, ctx.width)]
+        self.first_time = True
 
-vec_field = [[None for _ in range(0, HEIGHT)] for _ in range(0, WIDTH)]
-first_time = True
+    def compute(self, ctx: GameContext):
+        if ctx.width % 2 == 0:
+            for c in range(1, ctx.width - 1):
+                self.vec_field[c][ctx.height - 2] = vec2(-1, 0)
+                if c % 2 != 0:
+                    for y in range(0, ctx.height - 4):
+                        self.vec_field[c][2+y] = vec2(0, -1)
+                    self.vec_field[c][1] = vec2(1, 0)
+                else:
+                    for y in range(0, ctx.height - 4):
+                        self.vec_field[c][1+y] = vec2(0, 1)
+                    self.vec_field[c][ctx.height - 3] = vec2(1, 0)
+            self.vec_field[1][ctx.height - 2] = vec2(0, -1)
+            self.vec_field[ctx.width - 2][ctx.height - 3] = vec2(0, 1)
+        else:
+            for r in range(1, ctx.height - 1):
+                self.vec_field[1][r] = vec2(0, -1)
+                if r % 2 != 0:
+                    for x in range(0, ctx.width - 4):
+                        self.vec_field[2+x][r] = vec2(1, 0)
+                    self.vec_field[ctx.width - 2][r] = vec2(0, 1)
+                else:
+                    self.vec_field[2][r] = vec2(0, 1)
+                    for x in range(0, ctx.width - 4):
+                        self.vec_field[3+x][r] = vec2(-1, 0)
+            self.vec_field[1][1] = vec2(1, 0)
+            self.vec_field[2][ctx.height - 2] = vec2(-1, 0)
 
-def Compute():
-    global vec_field
+    def get_move(self, ctx: GameContext) -> vec2:
+        if self.first_time:
+            self.first_time = False
+            self.compute(ctx)
 
-    if WIDTH % 2 == 0:
-        for c in range(1, WIDTH - 1):
-            vec_field[c][HEIGHT - 2] = vec2(-1, 0)
-            if c % 2 != 0:
-                for y in range(0, HEIGHT - 4):
-                    vec_field[c][2+y] = vec2(0, -1)
-                vec_field[c][1] = vec2(1, 0)
-            else:
-                for y in range(0, HEIGHT - 4):
-                    vec_field[c][1+y] = vec2(0, 1)
-                vec_field[c][HEIGHT - 3] = vec2(1, 0)
-        vec_field[1][HEIGHT - 2] = vec2(0, -1)
-        vec_field[WIDTH - 2][HEIGHT - 3] = vec2(0, 1)
-    else:
-        for r in range(1, HEIGHT - 1):
-            vec_field[1][r] = vec2(0, -1)
-            if r % 2 != 0:
-                for x in range(0, WIDTH - 4):
-                    vec_field[2+x][r] = vec2(1, 0)
-                vec_field[WIDTH - 2][r] = vec2(0, 1)
-            else:
-                vec_field[2][r] = vec2(0, 1)
-                for x in range(0, WIDTH - 4):
-                    vec_field[3+x][r] = vec2(-1, 0)
-        vec_field[1][1] = vec2(1, 0)
-        vec_field[2][HEIGHT - 2] = vec2(-1, 0)
-
-def Get_move(board, snake, apple):
-    global first_time
-
-    if first_time:
-        first_time = False
-        Compute()
-
-    if vec_field[snake.head.x][snake.head.y] == -snake.movec:
-        return vec2(1, 0)
-    
-
-    if WIDTH % 2 == 0:
-        if (1 < apple.x - snake.head.x and snake.head.y == 1 and
-            board[snake.head.x + 1][snake.head.y] == Tile.EMPTY):
+        if self.vec_field[ctx.snake.head.x][ctx.snake.head.y] == -ctx.snake.movec:
             return vec2(1, 0)
-        elif (apple.x < snake.head.x and snake.head.y == HEIGHT - 3 and 
-            board[snake.head.x][snake.head.y + 1] == Tile.EMPTY):
-            return vec2(0, 1)
-    elif HEIGHT % 2 == 0:
-        pass
+        
 
-    return vec_field[snake.head.x][snake.head.y]
+        if ctx.width % 2 == 0:
+            if (1 < ctx.apple.x - ctx.snake.head.x and ctx.snake.head.y == 1 and
+                ctx.board[ctx.snake.head.x + 1][ctx.snake.head.y] == Tile.EMPTY):
+                return vec2(1, 0)
+            elif (ctx.apple.x < ctx.snake.head.x and ctx.snake.head.y == ctx.height - 3 and 
+                ctx.board[ctx.snake.head.x][ctx.snake.head.y + 1] == Tile.EMPTY):
+                return vec2(0, 1)
+        elif ctx.height % 2 == 0:
+            pass
+
+        return self.vec_field[ctx.snake.head.x][ctx.snake.head.y]
     
 
     
