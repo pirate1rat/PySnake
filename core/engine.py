@@ -50,6 +50,8 @@ class Engine (QObject):
 
         
     def clear_board(self):
+        self.statistics = GameStatistics()
+
         for i in range(self.settings.width):
             self.board[i][:] = [Tile.EMPTY for _ in range(0, self.settings.height)]
 

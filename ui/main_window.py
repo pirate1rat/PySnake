@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout
+from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QApplication
 from PyQt6.QtGui import QGuiApplication, QAction
 from PyQt6.QtCore import QTimer, Qt
 
@@ -71,14 +71,6 @@ class MainWindow(QMainWindow):
         self._game.initialize_solution(get_registry()[module_class_name])
 
     def update_game(self):
-        # if self.my_game.GAME_RUNNING:
-        #     parameters = self.my_game.update_game(self.module)
-        #     if self.VISIBLE:
-        #         self.update_canv(self.snake_canv, self.squares, self.my_game.conv_to_rgb())
-        #     if parameters:
-        #         self.statistics(parameters)
-
-        # self.main_window.after(self.settings.game_speed, self.update_game)
         self._game.update_game()
         self._board_widget.update()
 
@@ -106,12 +98,21 @@ class MainWindow(QMainWindow):
     def open_parameters_window(self):
         self.settings_window = SettingsWindow(self._game)
         self.settings_window.settings_changed.connect(self.apply_new_settings)
+        self.settings_window.game_speed_changed.connect(self.change_game_speed)
         self.settings_window.show()
     
 
     def apply_new_settings(self, new_settings: GameSettings):
         self.settings = new_settings
         self._game.initialize(self.settings)
+
         # passing new board to board_widget
         self._board_widget.initialize(self._game.get_board(), self.settings.block_size)
     
+    def change_game_speed(self, new_game_speed: int):
+        self.settings.game_speed = new_game_speed
+        self.timer.start(self.settings.game_speed)
+
+    def closeEvent(self, event):
+        QApplication.closeAllWindows()
+        event.accept()
