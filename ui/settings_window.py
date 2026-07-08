@@ -1,8 +1,9 @@
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
-    QSpinBox, QSlider, QPushButton, QMessageBox
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
+    QSpinBox, QSlider, QPushButton, QMessageBox, QCheckBox
 )
 from PyQt6.QtCore import Qt, pyqtSignal
+from PyQt6.QtGui import QIntValidator
 
 from models.game_settings import GameSettings
 import json
@@ -66,6 +67,24 @@ class SettingsWindow(QWidget):
         speed_layout.addWidget(self.speed_slider)
         speed_layout.addWidget(self.speed_input)
         layout.addLayout(speed_layout)
+
+        # 4. Seed
+        self.random_seed_checkbox = QCheckBox("Random seed:")
+        self.random_seed_checkbox.setChecked(self.current_settings.use_random_seed)
+
+        self.seed_input = QLineEdit()
+        self.seed_input.setValidator(QIntValidator())
+        self.seed_input.setText(str(self.current_settings.seed))
+
+        self.seed_input.setEnabled(not self.random_seed_checkbox.isChecked())
+        self.random_seed_checkbox.toggled.connect(
+            lambda checked: self.seed_input.setEnabled(not checked)
+        )
+
+        seed_layout = QHBoxLayout()
+        seed_layout.addWidget(self.random_seed_checkbox)
+        seed_layout.addWidget(self.seed_input)
+        layout.addLayout(seed_layout)
 
         ####
 
@@ -132,10 +151,12 @@ class SettingsWindow(QWidget):
 
         try:
             updated_settings = GameSettings(
-                block_size=int(self.block_size_input.value()),
-                width=int(self.width_input.value()),
-                height=int(self.height_input.value()),
-                game_speed=int(self.speed_input.value())
+                block_size=self.block_size_input.value(),
+                width=self.width_input.value(),
+                height=self.height_input.value(),
+                game_speed=self.speed_input.value(),
+                use_random_seed=self.random_seed_checkbox.isChecked(),
+                seed=self.seed_input.text()
             )
 
             with open(self.settings_file, "w", encoding="utf-8") as f:

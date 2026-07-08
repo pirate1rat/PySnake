@@ -2,5 +2,7 @@
     "block_size": 30,
     "width": 12,
     "height": 12,
-    "game_speed": 15
+    "game_speed": 120,
+    "use_random_seed": false,
+    "seed": "1337"
 }

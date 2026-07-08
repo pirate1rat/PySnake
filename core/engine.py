@@ -43,6 +43,11 @@ class Engine (QObject):
         self.statistics = GameStatistics()
         self.settings = settings
         self.board = [[] for _ in range(settings.width)]
+        if not settings.use_random_seed:
+            random.seed(self.settings.seed)
+        else:
+            random.seed(None)
+
         self.clear_board()
 
         if self.is_solution_init:
