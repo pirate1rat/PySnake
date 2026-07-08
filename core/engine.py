@@ -43,7 +43,13 @@ class Engine (QObject):
         self.statistics = GameStatistics()
         self.settings = settings
         self.board = [[] for _ in range(settings.width)]
+        self.clear_board()
 
+        if self.is_solution_init:
+            self.initialize_solution(self.solution_class)
+
+        
+    def clear_board(self):
         for i in range(self.settings.width):
             self.board[i][:] = [Tile.EMPTY for _ in range(0, self.settings.height)]
 
@@ -85,7 +91,7 @@ class Engine (QObject):
         self.statistics.turns += 1
 
         timer_start = time.perf_counter()
-        new_movec = self.solution_class.get_move(GameContext(
+        new_movec = self.solution.get_move(GameContext(
             self.board, 
             self.player, 
             self.apple, 
@@ -142,8 +148,8 @@ class Engine (QObject):
     
 
     # --- Methods to comunicate with engine ---
-    def restart(self, settings: GameSettings):
-        self.initialize(settings)
+    def restart(self):
+        self.clear_board()
         self.game_state_changed.emit(GameState.GAME_SET_READY)
     
     def pause(self):
@@ -158,13 +164,14 @@ class Engine (QObject):
         if self._state == GameState.GAME_IS_PAUSED:
             self.resume()
         elif self._state == GameState.GAME_IS_OVER:
-            self.restart(self.settings)
+            self.restart()
             self._state = GameState.GAME_IS_RUNNING
         
         self._run_in_loop = True
     
-    def initialize_solution(self, SolutionClass):
-        self.solution_class = SolutionClass(GameContext(
+    def initialize_solution(self, solution_class):
+        self.solution_class = solution_class
+        self.solution = solution_class(GameContext(
             self.board, 
             self.player, 
             self.apple, 
@@ -190,7 +197,7 @@ class Engine (QObject):
 
         stats = copy.copy(self.statistics)
         if self._run_in_loop:
-            self.restart(self.settings)
+            self.restart()
             self._state = GameState.GAME_IS_RUNNING
             self._run_in_loop = True
         else:
@@ -198,3 +205,6 @@ class Engine (QObject):
             self.game_state_changed.emit(self._state)
         
         self.return_statistics.emit(stats)
+
+    def get_board(self):
+        return self.board

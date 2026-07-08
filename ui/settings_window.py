@@ -87,14 +87,11 @@ class SettingsWindow(QWidget):
     def load_settings(self):
         """Safe loading of JSON files, preventing crashes due to file structure errors."""
 
-        #if os.path.exists(self.settings_file):
         try:
             with open(self.settings_file, "r", encoding="utf-8") as f:
                 return TypeAdapter(GameSettings).validate_python(json.load(f))
         except json.JSONDecodeError:
             pass
-
-        #return {"block_size": 30, "width": 8, "height": 8, "game_speed": 100}
 
     def sync_slider_to_input(self, value):
         """Updating the text field based on slider movement"""

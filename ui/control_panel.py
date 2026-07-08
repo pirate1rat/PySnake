@@ -3,7 +3,7 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import QSize, Qt
 
 class ControlPanel(QWidget):
-    def __init__(self, game, registry: list, import_solution: function):
+    def __init__(self, game, registry: list, import_solution):
         super().__init__()
         self._game = game
 

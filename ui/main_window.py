@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
         self._game = game
         self._game.game_state_changed.connect(self.on_state_changed)
 
-        self._board_widget = BoardWidget(self._game.board, self.settings.block_size)
+        self._board_widget = BoardWidget(self._game.get_board(), self.settings.block_size)
         self._control_panel = ControlPanel(self._game, get_registry_str(), self.import_solution)
         self._chart_widget = ChartWidget(self._game)
         self._console_widget = ConsoleWidget(self._game)
@@ -112,4 +112,6 @@ class MainWindow(QMainWindow):
     def apply_new_settings(self, new_settings: GameSettings):
         self.settings = new_settings
         self._game.initialize(self.settings)
+        # passing new board to board_widget
+        self._board_widget.initialize(self._game.get_board(), self.settings.block_size)
     

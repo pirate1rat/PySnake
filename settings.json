@@ -1,6 +1,6 @@
 {
     "block_size": 30,
-    "width": 12,
-    "height": 12,
-    "game_speed": 21
+    "width": 0,
+    "height": 0,
+    "game_speed": 1
 }
