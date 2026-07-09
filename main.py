@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import QApplication
 from core.engine import Engine
 from ui.main_window import MainWindow
 import sys
+import ctypes
 import solutions
 
 from models.game_settings import GameSettings
@@ -12,6 +13,9 @@ def main():
     with open("settings.json") as f:
         data = json.load(f)
     settings = TypeAdapter(GameSettings).validate_python(data)
+
+    myappid = "PySnake_v1.9"
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
     engine = Engine(settings)
     app = QApplication(sys.argv)

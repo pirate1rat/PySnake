@@ -1,9 +1,9 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QApplication
-from PyQt6.QtGui import QGuiApplication, QAction
+from PyQt6.QtGui import QGuiApplication, QAction, QIcon
 from PyQt6.QtCore import QTimer, Qt
 
 from ui.board_widget import BoardWidget
-from ui.control_panel import ControlPanel
+from ui.control_panel_widget import ControlPanelWidget
 from ui.chart_widget import ChartWidget
 from ui.console_widget import ConsoleWidget
 from ui.settings_window import SettingsWindow
@@ -25,13 +25,13 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("PySnake")
         self.resize(1050, 950)
         self.center()
-        #self.setWindowIcon(QIcon(""))
+        self.setWindowIcon(QIcon("ui/images/icons8-snake-64.ico"))
 
         self._game = game
         self._game.game_state_changed.connect(self.on_state_changed)
 
-        self._board_widget = BoardWidget(self._game.get_board(), self.settings.block_size)
-        self._control_panel = ControlPanel(self._game, get_registry_str(), self.import_solution)
+        self._board_widget = BoardWidget(self._game.get_board())
+        self._control_panel = ControlPanelWidget(self._game, get_registry_str(), self.import_solution)
         self._chart_widget = ChartWidget(self._game)
         self._console_widget = ConsoleWidget(self._game)
 
@@ -69,6 +69,7 @@ class MainWindow(QMainWindow):
     def import_solution(self, module_class_name):
         print(f"chosen: {module_class_name}")
         self._game.initialize_solution(get_registry()[module_class_name])
+        self.apply_new_settings(self.settings)
 
     def update_game(self):
         self._game.update_game()
@@ -107,7 +108,7 @@ class MainWindow(QMainWindow):
         self._game.initialize(self.settings)
 
         # passing new board to board_widget
-        self._board_widget.initialize(self._game.get_board(), self.settings.block_size)
+        self._board_widget.initialize(self._game.get_board())
     
     def change_game_speed(self, new_game_speed: int):
         self.settings.game_speed = new_game_speed

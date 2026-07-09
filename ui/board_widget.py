@@ -6,6 +6,8 @@ from registry import *
 
 from models.tiles import Tile
 
+limiting_size = 16
+default_block_size = 28
 
 @dataclass
 class Colors:
@@ -16,16 +18,20 @@ class Colors:
 
 
 class BoardWidget (QWidget):
-    def __init__(self, board, block_size):
+    def __init__(self, board):
         super().__init__()
         self.setFixedSize(450, 450)
-        self.initialize(board, block_size)
+        self.initialize(board)
 
-    def initialize(self, board, block_size):
+    def initialize(self, board):
         self._board = board
         self.WIDTH = len(board)
         self.HEIGHT = len(board[0])
-        self.block_size = block_size
+
+        if limiting_size < self.WIDTH or limiting_size < self.HEIGHT:
+            self.block_size = int(448 / (max(self.WIDTH, self.HEIGHT)))
+        else:
+            self.block_size = default_block_size
 
     def paintEvent(self, event):
         painter = QPainter(self)

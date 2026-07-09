@@ -28,21 +28,15 @@ class SettingsWindow(QWidget):
         layout = QVBoxLayout()
         self.setLayout(layout)
 
-        # 0. Block size
-        self.block_size_input = QSpinBox()
-        self.block_size_input.setRange(10, 50)
-        self.block_size_input.setValue(int(self.current_settings.block_size))
-        layout.addLayout(self.create_form_row("Block Size:", self.block_size_input))
-
         # 1. Width
         self.width_input = QSpinBox()
-        self.width_input.setRange(7, 30)
+        self.width_input.setRange(7, 50)
         self.width_input.setValue(int(self.current_settings.width))
         layout.addLayout(self.create_form_row("Width:", self.width_input))
 
         # 2. Height
         self.height_input = QSpinBox()
-        self.height_input.setRange(7, 30)
+        self.height_input.setRange(7, 50)
         self.height_input.setValue(int(self.current_settings.height))
         layout.addLayout(self.create_form_row("Height:", self.height_input))
 
@@ -151,7 +145,6 @@ class SettingsWindow(QWidget):
 
         try:
             updated_settings = GameSettings(
-                block_size=self.block_size_input.value(),
                 width=self.width_input.value(),
                 height=self.height_input.value(),
                 game_speed=self.speed_input.value(),
