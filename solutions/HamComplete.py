@@ -21,7 +21,7 @@ class HamComplete():
                     self.vec_field[c][ctx.height - 3] = vec2(1, 0)
             self.vec_field[1][ctx.height - 2] = vec2(0, -1)
             self.vec_field[ctx.width - 2][ctx.height - 3] = vec2(0, 1)
-        else:
+        elif ctx.height % 2 == 0:
             for r in range(1, ctx.height - 1):
                 self.vec_field[1][r] = vec2(0, -1)
                 if r % 2 != 0:
@@ -34,11 +34,41 @@ class HamComplete():
                         self.vec_field[3 + x][r] = vec2(-1, 0)
             self.vec_field[1][1] = vec2(1, 0)
             self.vec_field[2][ctx.height - 2] = vec2(-1, 0)
+        else:
+            for c in range(1, ctx.width - 3):
+                self.vec_field[c][ctx.height - 2] = vec2(-1, 0)
+                if c % 2 != 0:
+                    for y in range(0, ctx.height - 4):
+                        self.vec_field[c][2 + y] = vec2(0, -1)
+                    self.vec_field[c][1] = vec2(1, 0)
+                else:
+                    for y in range(0, ctx.height - 4):
+                        self.vec_field[c][1 + y] = vec2(0, 1)
+                    self.vec_field[c][ctx.height - 3] = vec2(1, 0)
+            
+            for r in range(1, ctx.height - 2):
+                if r % 2 != 0:
+                    self.vec_field[ctx.width - 3][r] = vec2(1, 0)
+                    self.vec_field[ctx.width - 2][r] = vec2(0, 1)
+                else:
+                    self.vec_field[ctx.width - 3][r] = vec2(0, 1)
+                    self.vec_field[ctx.width - 2][r] = vec2(-1, 0)
+            
+            self.vec_field[ctx.width - 3][ctx.height - 2] = vec2(-1, 0)
+            self.vec_field[ctx.width - 2][ctx.height - 2] = vec2(-1, 0)
+            self.vec_field[1][ctx.height - 2] = vec2(0, -1)
+
 
     def get_move(self, ctx: GameContext) -> vec2:
         if self.first_time:
             self.first_time = False
             self.compute(ctx)
+
+        if ctx.board[ctx.width - 2][ctx.height - 2] == Tile.APPLE:
+            self.vec_field[ctx.width - 2][ctx.height - 3] = vec2(0, 1)
+        else:
+            self.vec_field[ctx.width - 2][ctx.height - 3] = vec2(-1, 0)
+
 
         if self.vec_field[ctx.snake.head.x][ctx.snake.head.y] == -ctx.snake.movec:
             return vec2(1, 0)

@@ -40,7 +40,7 @@ class ControlPanelWidget(QWidget):
         self.restart_btn.setFixedSize(64, 64)
         self.restart_btn.setIconSize(QSize(64, 64))
         self.restart_btn.setIcon(QIcon("ui/images/icons8-restart-50.png"))
-        self.restart_btn.clicked.connect(self._game.restart)
+        self.restart_btn.clicked.connect(self._restart_btn_clicked)
 
         self.loop_btn = QPushButton()
         self.loop_btn.setFixedSize(64, 64)
@@ -61,6 +61,11 @@ class ControlPanelWidget(QWidget):
 
         main_layout.addLayout(grid)
         self.setLayout(main_layout)
+
+    def _restart_btn_clicked(self):
+        self._game.restart()
+        self._game.pause()
+        self.play_pause_btn.setIcon(QIcon("ui/images/icons8-play-50.png"))
 
     def _toggle_play_pause(self):
         if self._game._state == GameState.GAME_IS_PAUSED:

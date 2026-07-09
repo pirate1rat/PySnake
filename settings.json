@@ -1,7 +1,7 @@
 {
-    "width": 50,
-    "height": 50,
-    "game_speed": 1,
+    "width": 13,
+    "height": 14,
+    "game_speed": 51,
     "use_random_seed": false,
     "seed": "1337"
 }

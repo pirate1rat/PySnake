@@ -1,1 +1,1 @@
-from solutions import HamComplete, HamShort, OneBFS, MultiBFS
+from solutions import HamComplete, HamShort, OneBFS, MultiBFS, Human
