@@ -30,10 +30,10 @@ class MainWindow(QMainWindow):
         self._game = game
         self._game.game_state_changed.connect(self.on_state_changed)
 
-        self._board_widget = BoardWidget(self._game.get_board())
-        self._control_panel = ControlPanelWidget(self._game, get_registry_str(), self.import_solution)
         self._chart_widget = ChartWidget(self._game)
         self._console_widget = ConsoleWidget(self._game)
+        self._board_widget = BoardWidget(self._game.get_board())
+        self._control_panel = ControlPanelWidget(self._game, get_registry_str(), self.import_solution)
 
         central = QWidget()
         main_layout = QHBoxLayout(central)
@@ -69,6 +69,9 @@ class MainWindow(QMainWindow):
     def import_solution(self, module_class_name):
         print(f"chosen: {module_class_name}")
         self._game.initialize_solution(get_registry()[module_class_name])
+        self._console_widget.module_name = module_class_name
+        self._chart_widget.settings = self.settings
+        self._chart_widget.module_name = module_class_name
         self.apply_new_settings(self.settings)
 
     def update_game(self):

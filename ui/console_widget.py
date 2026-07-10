@@ -12,6 +12,7 @@ class ConsoleWidget(QWidget):
         super().__init__()
         self._game = game
         self._game.return_statistics.connect(self.add_to_history)
+        self.module_name = ""
         
         self.keys = [f.name for f in fields(GameStatistics)]
         self.history = {key: [] for key in self.keys}
@@ -63,9 +64,9 @@ class ConsoleWidget(QWidget):
         try:
             points = self.history.get('points', [0])[-1]
             turns = self.history.get('turns', [0])[-1]
-            total_time = self.history.get('times', [0])[-1] 
+            compute_time_sum = self.history.get('compute_time_sum', [0])[-1] 
             
-            new_line = f"Game #{self.num_of_games}: points = {points}, turns = {turns}, time = {total_time:.10f}s"
+            new_line = f"({self.module_name}) Game #{self.num_of_games}: points = {points}, turns = {turns}, time = {compute_time_sum:.5f}s"
             
             self._log_history.insert(0, new_line)
             self._log_history = self._log_history[:max_lines]
@@ -79,6 +80,6 @@ class ConsoleWidget(QWidget):
         for key, values in self.history.items():
             if values:
                 mean_val = np.mean(values)
-                avg_text.append(f"avg {key}: {mean_val:.2f}")
+                avg_text.append(f"avg {key}: {mean_val:.3f}")
         
         self._averages_console.setPlainText("\n".join(avg_text))

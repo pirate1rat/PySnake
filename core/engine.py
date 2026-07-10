@@ -106,7 +106,7 @@ class Engine (QObject):
             self.settings.height
         ))
         timer_end = time.perf_counter()
-        self.statistics.measured_time += timer_end - timer_start
+        self.statistics.compute_time_sum += timer_end - timer_start
 
         if new_movec != vec2(0, 0) and self.player.movec != -new_movec:
             self.player.movec = copy.copy(new_movec)

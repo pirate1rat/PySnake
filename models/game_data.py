@@ -4,4 +4,4 @@ from dataclasses import dataclass, fields
 class GameStatistics:
     points: int = 0
     turns: int = 0
-    measured_time: int = 0
+    compute_time_sum: float = 0

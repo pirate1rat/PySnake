@@ -3,6 +3,7 @@ from PyQt6.QtCore import QSize, Qt
 
 from core.engine import Engine
 from models.game_data import *
+from models.game_settings import GameSettings
 
 import numpy as np
 import pandas as pd
@@ -22,6 +23,8 @@ class ChartWidget(QWidget):
 
         self._game = game
         self._game.return_statistics.connect(self.got_stats)
+        self.settings: GameSettings = None
+        self.module_name: str = None
 
         self.keys = [f.name for f in fields(GameStatistics)]
         self.history = {key: [] for key in self.keys}
@@ -144,8 +147,11 @@ class ChartWidget(QWidget):
         if file_path:
             if not file_path.endswith('.csv'):
                 file_path += '.csv'
-                
-            df = pd.DataFrame(self.history)
-            
-            df.to_csv(file_path, index=False, sep=';')
+
+            with open(file_path, 'w', newline='') as f:
+                f.write(f"mode;width;height;seed\n")
+                f.write(f"{self.module_name};{self.settings.width};{self.settings.height};{self.settings.seed if not self.settings.use_random_seed else 'random'}\n")
+                f.write("\n")
+                pd.DataFrame(self.history).to_csv(f, index=False, sep=';')
+
             print(f"History of {self.num_of_games} games successfully save to file {file_path}")
