@@ -14,17 +14,15 @@ class SettingsWindow(QWidget):
     settings_changed = pyqtSignal(GameSettings)
     game_speed_changed = pyqtSignal(int)
 
-    def __init__(self, game):
+    def __init__(self, game, settings: GameSettings):
         super().__init__()
         self._game = game
+        self.current_settings: GameSettings = settings
+        self.settings_file = "settings.json"
 
         self.setWindowTitle("Settings")
         self.resize(400, 350)
         
-        self.settings_file = "settings.json"
-        
-        self.current_settings: GameSettings = self.load_settings()
-
         layout = QVBoxLayout()
         self.setLayout(layout)
 
@@ -96,15 +94,6 @@ class SettingsWindow(QWidget):
         row_layout.addWidget(label)
         row_layout.addWidget(widget)
         return row_layout
-
-    def load_settings(self):
-        """Safe loading of JSON files, preventing crashes due to file structure errors."""
-
-        try:
-            with open(self.settings_file, "r", encoding="utf-8") as f:
-                return TypeAdapter(GameSettings).validate_python(json.load(f))
-        except json.JSONDecodeError:
-            pass
 
     def sync_slider_to_input(self, new_game_speed):
         """Updating the text field based on slider movement"""

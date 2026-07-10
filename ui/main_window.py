@@ -100,7 +100,7 @@ class MainWindow(QMainWindow):
 
 
     def open_parameters_window(self):
-        self.settings_window = SettingsWindow(self._game)
+        self.settings_window = SettingsWindow(self._game, self.settings)
         self.settings_window.settings_changed.connect(self.apply_new_settings)
         self.settings_window.game_speed_changed.connect(self.change_game_speed)
         self.settings_window.show()
